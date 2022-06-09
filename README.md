@@ -1,3 +1,5 @@
+[![Release](https://github.com/unknown4unnamed/pcssmdts/actions/workflows/push.yaml/badge.svg?branch=main)](https://github.com/unknown4unnamed/pcssmdts/actions/workflows/push.yaml)
+
 # pcssmdts
 
 `pcssmdts` helps you ensure that you use `classNames` that actually exists when you write your PostCSS powered CSS Modules.

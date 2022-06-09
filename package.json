@@ -1,6 +1,6 @@
 {
-  "name": "@unknown4unnamed/pcssmdts",
-  "version": "0.0.2",
+  "name": "pcssmdts",
+  "version": "0.0.1",
   "description": "Generate d.ts files for PostCSS modules",
   "main": "dist/index.js",
   "bin": {
@@ -17,7 +17,7 @@
     "url": "git+https://github.com/unknown4unnamed/pcssmdts.git"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "registry": "https://registry.npmjs.org/"
   },
   "bugs": {
     "url": "https://github.com/unknown4unnamed/pcssmdts/issues"

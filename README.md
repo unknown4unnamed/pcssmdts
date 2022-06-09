@@ -31,7 +31,7 @@ _In your package.json's scripts_
 
 ## Motivation
 
-Le'ts assume that you have your project setup with [PostCSS](https://github.com/postcss/postcss), [CSS modules](https://github.com/css-modules/css-modules) and [TypeScript](https://www.typescriptlang.org/). You want to write your css code using some nice features that provided by PostCSS plugins (like [postcss-nested](https://github.com/postcss/postcss-nested)) or use one of supported [PostCSS syntax](https://github.com/postcss/postcss#syntaxes).
+Let's assume that you have your project setup with [PostCSS](https://github.com/postcss/postcss), [CSS modules](https://github.com/css-modules/css-modules) and [TypeScript](https://www.typescriptlang.org/). You want to write your css code using some nice features that provided by PostCSS plugins (like [postcss-nested](https://github.com/postcss/postcss-nested)) or use one of supported [PostCSS syntax](https://github.com/postcss/postcss#syntaxes).
 
 During development you actually face with two issues:
 

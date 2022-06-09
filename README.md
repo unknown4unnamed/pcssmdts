@@ -11,7 +11,7 @@ It is faster to use this utility through `npx` without installation.
 _`npx` usage:_
 
 ```sh
-npx pcssmdts \"src/**/*.module.css\"
+npx @unknown4unnamed/pcssmdts "src/**/*.module.css"
 ```
 
 Alternatively you can add it as devDependency to your project and use it in the same way. Both options are fine.
@@ -50,7 +50,7 @@ However TypeScript at this time, does not support plugins during compilation. Th
 But with `pcssmdts` dreams comes true, and from now on you can generate `*.module.d.ts` from your `*.module.css`.
 
 ```sh
-npx pcssmdts \"src/**/*.module.css\"
+npx @unknown4unnamed/pcssmdts "src/**/*.module.css"
 ```
 
 By running command above command a few things will happen:
@@ -161,7 +161,7 @@ Property 'someAwesomeClassName' does not exist on type "{ readonly foo: string; 
 If you want to keep compiled css files for some reason use `-k` option, [see CLI usage section](#cli-usage).
 
 ```sh
-npx pcssmdts \"src/**/*.module.css\" -k
+npx @unknown4unnamed/pcssmdts "src/**/*.module.css" -k
 ```
 
 Your Component folder structure with `-k` option:

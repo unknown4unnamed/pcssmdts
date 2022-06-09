@@ -1,4 +1,5 @@
 [![Release](https://github.com/unknown4unnamed/pcssmdts/actions/workflows/push.yaml/badge.svg?branch=main)](https://github.com/unknown4unnamed/pcssmdts/actions/workflows/push.yaml)
+[![npm](https://img.shields.io/badge/npm-pcssmdts-CB3837.svg?style=flat-square)](https://www.npmjs.com/package/pcssmdts)
 
 # pcssmdts
 

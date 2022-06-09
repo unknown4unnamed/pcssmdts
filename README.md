@@ -8,15 +8,12 @@
 
 It is faster to use this utility through `npx` without installation.
 
-_`npx` usage:_
-
 ```sh
 npx @unknown4unnamed/pcssmdts "src/**/*.module.css"
 ```
 
 Alternatively you can add it as devDependency to your project and use it in the same way. Both options are fine.
 
-_Installation as dev dependency and usage:_
 
 ```sh
 yarn add @unknown4unnamed/pcssmdts -D

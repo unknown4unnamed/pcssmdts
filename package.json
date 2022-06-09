@@ -1,0 +1,74 @@
+{
+  "name": "@unknown4unnamed/pcssmdts",
+  "version": "0.0.1",
+  "description": "Generate d.ts files for PostCSS modules",
+  "main": "dist/index.js",
+  "bin": {
+    "pcssmdts": "dist/index.js"
+  },
+  "type": "commonjs",
+  "files": [
+    "dist"
+  ],
+  "author": "Vasyl Semilyak <vasyl.semilyak@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unknown4unnamed/pcssmdts.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "bugs": {
+    "url": "https://github.com/unknown4unnamed/pcssmdts/issues"
+  },
+  "homepage": "https://github.com/unknown4unnamed/pcssmdts#readme",
+  "engines": {
+    "node": ">=14"
+  },
+  "keywords": [
+    "PostCSS",
+    "config",
+    "css-modules",
+    "typescript"
+  ],
+  "scripts": {
+    "dev": "tsc -p . -w",
+    "build": "rimraf ./dist && tsc -p . ",
+    "prettify": "prettier --single-quote index.ts",
+    "format": "yarn prettify --write && eslint . --fix"
+  },
+  "dependencies": {
+    "chalk": "4.1.2",
+    "fast-glob": "^3.2.11",
+    "fs-extra": "^10.1.0",
+    "postcss": "^8.4.14",
+    "postcss-load-config": "^4.0.1",
+    "typed-css-modules": "^0.7.2",
+    "yargs": "^17.5.1"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^9.0.13",
+    "@types/node": "^14.0.40",
+    "@types/yargs": "^17.0.10",
+    "@typescript-eslint/eslint-plugin": "^5.27.0",
+    "@typescript-eslint/parser": "^5.27.0",
+    "eslint": "^8.17.0",
+    "eslint-config-prettier": "^8.5.0",
+    "prettier": "^2.6.2",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.7.3"
+  },
+  "eslintConfig": {
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "prettier"
+    ]
+  }
+}

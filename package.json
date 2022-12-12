@@ -39,7 +39,7 @@
     "format": "yarn prettify --write && eslint . --fix"
   },
   "dependencies": {
-    "chalk": "4.1.2",
+    "chalk": "5.2.0",
     "fast-glob": "^3.2.11",
     "fs-extra": "^10.1.0",
     "postcss": "^8.4.14",

@@ -23,12 +23,43 @@ export const initCLI = () => {
       demandOption: false,
       description: 'Keep compiled css files',
     })
-    .group(['namedExports'], 'typed-css-modules options:')
+    .group(
+      [
+        'namedExports',
+        'camelCase',
+        'searchDir',
+        'outDir',
+        'dropExtension',
+        'eol',
+      ],
+      'typed-css-modules options:'
+    )
     .option('namedExports', {
       alias: 'n',
       type: 'boolean',
       default: false,
       description: 'Enables named export for generated d.ts files',
+    })
+    .option('camelCase', {
+      type: 'string',
+      choices: ['true', 'false', 'dashes'],
+      description: 'Convert CSS class names to camelCase',
+    })
+    .option('searchDir', {
+      type: 'string',
+      description: 'Directory to search for CSS Modules',
+    })
+    .option('outDir', {
+      type: 'string',
+      description: 'Output directory for generated d.ts files',
+    })
+    .option('dropExtension', {
+      type: 'boolean',
+      description: 'Drop the input file extension in the output file name',
+    })
+    .option('eol', {
+      type: 'string',
+      description: 'End of line character',
     })
     .command(
       '$0 <source> [options]',
@@ -40,11 +71,25 @@ export const initCLI = () => {
         }),
       async (argv) => {
         try {
+          const camelCase =
+            argv.camelCase === 'true'
+              ? true
+              : argv.camelCase === 'false'
+              ? false
+              : argv.camelCase === 'dashes'
+              ? 'dashes'
+              : undefined;
+
           await run(argv.source, {
             verbose: argv.verbose,
             configPath: argv.config,
             keep: argv.keep,
             namedExports: argv.namedExports,
+            camelCase,
+            searchDir: argv.searchDir,
+            outDir: argv.outDir,
+            dropExtension: argv.dropExtension,
+            EOL: argv.eol,
           });
         } catch (error) {
           console.error(error instanceof Error ? error.message : String(error));
@@ -67,6 +112,14 @@ export const initCLI = () => {
     .example(
       'pcssmdts "src/**/*.module.css" -n',
       'Named exports is used for generated files\n\n'
+    )
+    .example(
+      'pcssmdts "src/**/*.module.css" --camelCase dashes',
+      'Convert CSS class names to camelCase, preserving dashes\n\n'
+    )
+    .example(
+      'pcssmdts "src/**/*.module.css" --outDir types',
+      'Output d.ts files to a specific directory\n\n'
     )
     .parse();
 };

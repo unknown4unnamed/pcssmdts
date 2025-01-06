@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { readFile, writeFile, rename, remove } from 'fs-extra';
+import { readFile, writeFile, rename, remove, mkdir } from 'fs-extra';
 
 import {
   COMPILED_CSS_PREFIX,
@@ -26,13 +26,22 @@ export const createFileOperations = (): FileOperations => ({
 
   writeDtsFile: async (
     compiledPath: string,
-    content: string
+    content: string,
+    outDir?: string
   ): Promise<string> => {
-    const dtsPath = `${compiledPath.replace(
+    const baseDtsPath = `${compiledPath.replace(
       COMPILED_CSS_PREFIX,
       ''
     )}.${TYPE_DEF_FILE_EXT}`;
     const tempDtsPath = `${compiledPath}.${TYPE_DEF_FILE_EXT}`;
+
+    const dtsPath = outDir
+      ? path.join(outDir, path.basename(baseDtsPath))
+      : baseDtsPath;
+
+    if (outDir) {
+      await mkdir(outDir, { recursive: true });
+    }
 
     await writeFile(tempDtsPath, content);
     await rename(tempDtsPath, dtsPath);

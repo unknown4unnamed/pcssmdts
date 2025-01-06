@@ -11,12 +11,29 @@ import { createFileOperations } from './file-operations';
 
 export const run = async (
   source: string,
-  { verbose, configPath, namedExports, keep = false }: Params
+  {
+    verbose,
+    configPath,
+    namedExports,
+    keep = false,
+    camelCase,
+    searchDir,
+    outDir,
+    dropExtension,
+    EOL,
+  }: Params
 ): Promise<void> => {
   const log = logger(verbose);
   const fileOps = createFileOperations();
   const cssProcessor = createCSSProcessor();
-  const dtsGenerator = createDtsGenerator({ namedExports });
+  const dtsGenerator = createDtsGenerator({
+    namedExports,
+    camelCase,
+    searchDir,
+    outDir,
+    dropExtension,
+    EOL,
+  });
 
   log(chalk.greenBright(`\nGenerating d.ts for "${source}"\n`));
 
@@ -75,6 +92,7 @@ export const run = async (
           log(
             chalk.yellow(`Empty file detected: ${cssModuleFilePath}, skipping`)
           );
+          // Skip empty files - no type definitions needed
           continue;
         }
 
@@ -107,16 +125,22 @@ export const run = async (
             log(
               chalk.yellow(`No CSS classes to export in: ${cssModuleFilePath}`)
             );
-            await fileOps.removeCompiledFiles(
+            // For empty modules, still generate an empty d.ts file
+            await fileOps.writeDtsFile(
               compiledCSSFilePath,
-              `${cssModuleFilePath}.d.ts`
+              dtsContent.formatted,
+              outDir
             );
+            if (!keep) {
+              await fileOps.removeFile(compiledCSSFilePath);
+            }
             continue;
           }
 
           const dtsFilename = await fileOps.writeDtsFile(
             compiledCSSFilePath,
-            dtsContent.formatted
+            dtsContent.formatted,
+            outDir
           );
 
           if (!keep) {

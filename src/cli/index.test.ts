@@ -14,6 +14,11 @@ type CLIArguments = Arguments<{
   config?: string;
   keep?: boolean;
   namedExports?: boolean;
+  camelCase?: string;
+  searchDir?: string;
+  outDir?: string;
+  dropExtension?: boolean;
+  eol?: string;
 }>;
 
 // Mock dependencies
@@ -56,7 +61,14 @@ describe('CLI', () => {
       'Basic options:'
     );
     expect(mockYargsInstance.group).toHaveBeenCalledWith(
-      ['namedExports'],
+      [
+        'namedExports',
+        'camelCase',
+        'searchDir',
+        'outDir',
+        'dropExtension',
+        'eol',
+      ],
       'typed-css-modules options:'
     );
 
@@ -75,6 +87,14 @@ describe('CLI', () => {
     );
     expect(mockYargsInstance.example).toHaveBeenCalledWith(
       'pcssmdts "src/**/*.module.css" -n',
+      expect.stringContaining('')
+    );
+    expect(mockYargsInstance.example).toHaveBeenCalledWith(
+      'pcssmdts "src/**/*.module.css" --camelCase dashes',
+      expect.stringContaining('')
+    );
+    expect(mockYargsInstance.example).toHaveBeenCalledWith(
+      'pcssmdts "src/**/*.module.css" --outDir types',
       expect.stringContaining('')
     );
   });
@@ -109,28 +129,32 @@ describe('CLI', () => {
       description: expect.stringContaining('') as string,
     };
 
-    // Verify verbose option
+    const camelCaseOption: Partial<Options> = {
+      type: 'string',
+      choices: ['true', 'false', 'dashes'],
+      description: expect.stringContaining('') as string,
+    };
+
+    // Verify all options
     expect(mockYargsInstance.option).toHaveBeenCalledWith(
       'verbose',
       expect.objectContaining(verboseOption)
     );
-
-    // Verify config option
     expect(mockYargsInstance.option).toHaveBeenCalledWith(
       'config',
       expect.objectContaining(configOption)
     );
-
-    // Verify keep option
     expect(mockYargsInstance.option).toHaveBeenCalledWith(
       'keep',
       expect.objectContaining(keepOption)
     );
-
-    // Verify namedExports option
     expect(mockYargsInstance.option).toHaveBeenCalledWith(
       'namedExports',
       expect.objectContaining(namedExportsOption)
+    );
+    expect(mockYargsInstance.option).toHaveBeenCalledWith(
+      'camelCase',
+      expect.objectContaining(camelCaseOption)
     );
   });
 
@@ -160,6 +184,11 @@ describe('CLI', () => {
         config: 'custom.config.js',
         keep: true,
         namedExports: true,
+        camelCase: 'dashes',
+        searchDir: 'src',
+        outDir: 'types',
+        dropExtension: true,
+        eol: '\n',
         $0: '',
         _: [],
       });
@@ -169,6 +198,11 @@ describe('CLI', () => {
         configPath: 'custom.config.js',
         keep: true,
         namedExports: true,
+        camelCase: 'dashes',
+        searchDir: 'src',
+        outDir: 'types',
+        dropExtension: true,
+        EOL: '\n',
       } satisfies Params);
     }
   });
@@ -205,6 +239,11 @@ describe('CLI', () => {
         configPath: undefined,
         keep: undefined,
         namedExports: false,
+        camelCase: undefined,
+        searchDir: undefined,
+        outDir: undefined,
+        dropExtension: undefined,
+        EOL: undefined,
       } satisfies Params);
     }
   });

@@ -87,8 +87,11 @@ jobs:
           node-version: 20.0.0
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Install semantic-release
+        run: pnpm add -D semantic-release @semantic-release/changelog @semantic-release/git
+
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: pnpm dlx semantic-release
+        run: pnpm semantic-release

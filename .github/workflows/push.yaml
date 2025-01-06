@@ -151,14 +151,17 @@ jobs:
       - name: Update badges
         run: |
           COVERAGE=$(cat coverage/coverage-summary.json | jq -r '.total.lines.pct')
-          COLOR=$(if [ $COVERAGE -gt 90 ]; then echo 'brightgreen'; elif [ $COVERAGE -gt 80 ]; then echo 'green'; elif [ $COVERAGE -gt 70 ]; then echo 'yellowgreen'; elif [ $COVERAGE -gt 60 ]; then echo 'yellow'; else echo 'red'; fi)
-          COVERAGE_BADGE="https://img.shields.io/badge/coverage-$COVERAGE%25-$COLOR"
-          VERSION_BADGE="https://img.shields.io/badge/npm-v${{ steps.version.outputs.version }}-blue"
+          COLOR=$(if (( $(echo "$COVERAGE > 90" | bc -l) )); then echo 'brightgreen'; elif (( $(echo "$COVERAGE > 80" | bc -l) )); then echo 'green'; elif (( $(echo "$COVERAGE > 70" | bc -l) )); then echo 'yellowgreen'; elif (( $(echo "$COVERAGE > 60" | bc -l) )); then echo 'yellow'; else echo 'red'; fi)
 
-          sed -i.bak -E \
-            -e "s|!\[Coverage\]\([^)]*\)|![Coverage]($COVERAGE_BADGE)|" \
-            -e "s|!\[npm\]\([^)]*\)\(](\[^)]*)\)?|[![npm]($VERSION_BADGE)](https://www.npmjs.com/package/pcssmdts)|" \
-            README.md
+          # Update coverage badge
+          sed -i -E 's|!\[Coverage\]\(https://img.shields.io/badge/coverage-[0-9.]+%25-[a-z]+\)|![Coverage](https://img.shields.io/badge/coverage-'$COVERAGE'%25-'$COLOR')|g' README.md
+
+          # Update npm version badge
+          VERSION="${{ steps.version.outputs.version }}"
+          sed -i -E 's|!\[npm\]\(https://img.shields.io/badge/npm-v[0-9.]+(-[a-z]+)?-blue\)|![npm](https://img.shields.io/badge/npm-v'$VERSION'-blue)|g' README.md
+
+          # Ensure npm badge has link
+          sed -i -E 's|!\[npm\]\(([^)]+)\)$|[![npm](\1)](https://www.npmjs.com/package/pcssmdts)|g' README.md
 
       - name: Commit and push badges
         run: |

@@ -1,5 +1,6 @@
-[![Release](https://github.com/unknown4unnamed/pcssmdts/actions/workflows/push.yaml/badge.svg?branch=main)](https://github.com/unknown4unnamed/pcssmdts/actions/workflows/push.yaml)
-[![npm](https://img.shields.io/badge/npm-pcssmdts-CB3837.svg?style=flat-square)](https://www.npmjs.com/package/pcssmdts)
+[![Test](https://github.com/unknown4unnamed/pcssmdts/actions/workflows/test.yml/badge.svg)](https://github.com/unknown4unnamed/pcssmdts/actions/workflows/test.yml)
+[![npm version](https://badge.fury.io/js/pcssmdts.svg)](https://badge.fury.io/js/pcssmdts)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # pcssmdts
 
@@ -14,7 +15,6 @@ npx pcssmdts "src/**/*.module.css"
 ```
 
 Alternatively you can add it as devDependency to your project and use it in the same way. Both options are fine.
-
 
 ```sh
 yarn add pcssmdts -D

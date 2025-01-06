@@ -40,6 +40,7 @@
     "dev": "tsc -p . -w",
     "build": "rimraf ./dist && tsup",
     "lint": "eslint . --fix",
+    "type-check": "tsc --noEmit",
     "test": "pnpm build && pnpm test:unit && pnpm test:e2e",
     "test:unit": "vitest run src/",
     "test:e2e": "rimraf \"./e2e/fixtures/styles/*.d.ts\" && vitest run e2e/index.test.ts --no-threads",

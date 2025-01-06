@@ -6,42 +6,64 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
 # what the action will do
 jobs:
-  release:
-    # The operating system it will run on
+  validate:
     runs-on: ubuntu-latest
-    # This check needs to be in place to prevent a publish loop with auto and github actions
-    if: '!contains(github.event.head_commit.message, "ci skip") && !contains(github.event.head_commit.message, "skip ci")'
-    # The list of steps that the action will go through
     steps:
-      - uses: actions/checkout@v2
-      - name: Prepare repository
-        run: git fetch --unshallow --tags
+      - uses: actions/checkout@v3
 
-      - name: Unset header
-        # checkout@v2 adds a header that makes branch protection report errors
-        # because the Github action bot is not a collaborator on the repo
-        run: git config --local --unset http.https://github.com/.extraheader
-
-      - name: Use Node.js 16.x
-        uses: actions/setup-node@v1
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: 18.x
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check
+        run: pnpm type-check
+
+  release:
+    needs: validate
+    runs-on: ubuntu-latest
+    if: '!contains(github.event.head_commit.message, "ci skip") && !contains(github.event.head_commit.message, "skip ci")'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
 
       - name: Cache node modules
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: node_modules
-          key: yarn-deps-${{ hashFiles('yarn.lock') }}
+          key: pnpm-deps-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
-            yarn-deps-${{ hashFiles('yarn.lock') }}
+            pnpm-deps-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          yarn install --frozen-lockfile
-          yarn build
-          npx auto shipit
+          pnpm install --frozen-lockfile
+          pnpm build
+          pnpm exec auto shipit

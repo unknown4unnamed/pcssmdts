@@ -52,3 +52,71 @@ export const button: string;
 
 "
 `;
+
+exports[`E2E > should preserve PostCSS files when keep option is enabled > compiled css content 1`] = `
+".container {
+
+    display: flex;
+
+    min-height: 100vh;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center
+}
+
+.title {
+
+    font-size: 2.25rem;
+
+    line-height: 2.5rem;
+
+    font-weight: 700;
+
+    --tw-text-opacity: 1;
+
+    color: rgb(37 99 235 / var(--tw-text-opacity, 1))
+}
+
+.button {
+
+    border-radius: 0.25rem;
+
+    --tw-bg-opacity: 1;
+
+    background-color: rgb(59 130 246 / var(--tw-bg-opacity, 1));
+
+    padding-left: 1rem;
+
+    padding-right: 1rem;
+
+    padding-top: 0.5rem;
+
+    padding-bottom: 0.5rem;
+
+    --tw-text-opacity: 1;
+
+    color: rgb(255 255 255 / var(--tw-text-opacity, 1))
+}
+
+.button:hover {
+
+    --tw-bg-opacity: 1;
+
+    background-color: rgb(37 99 235 / var(--tw-bg-opacity, 1))
+}
+"
+`;
+
+exports[`E2E > should preserve PostCSS files when keep option is enabled 1`] = `
+"declare const styles: {
+  readonly \\"container\\": string;
+  readonly \\"title\\": string;
+  readonly \\"button\\": string;
+};
+export = styles;
+
+"
+`;

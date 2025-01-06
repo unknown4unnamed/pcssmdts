@@ -12,10 +12,12 @@ const CONFIGS_DIR = join(FIXTURES_DIR, 'configs');
 describe('E2E', () => {
   beforeEach(async () => {
     await rm(join(STYLES_DIR, '*.d.ts')).catch(() => undefined);
+    await rm(join(STYLES_DIR, '_compiled.*')).catch(() => undefined);
   });
 
   afterEach(async () => {
     await rm(join(STYLES_DIR, '*.d.ts')).catch(() => undefined);
+    await rm(join(STYLES_DIR, '_compiled.*')).catch(() => undefined);
   });
 
   it('should generate d.ts files with default options', async () => {
@@ -111,5 +113,28 @@ describe('E2E', () => {
         configPath: join(CONFIGS_DIR, 'invalid', 'postcss.config.js'),
       })
     ).rejects.toThrow();
+  });
+
+  it('should preserve PostCSS files when keep option is enabled', async () => {
+    await run(join(STYLES_DIR, 'valid.module.css'), {
+      configPath: join(CONFIGS_DIR, 'postcss.config.js'),
+      keep: true,
+    });
+
+    // Check if both .d.ts and PostCSS file exist
+    const dtsContent = await readFile(
+      join(STYLES_DIR, 'valid.module.css.d.ts'),
+      'utf-8'
+    );
+    expect(dtsContent).toMatchSnapshot();
+
+    const compiledCssPath = join(STYLES_DIR, '_compiled.valid.module.css');
+    const compiledCssContent = await readFile(compiledCssPath, 'utf-8');
+
+    // Verify the compiled CSS content
+    expect(compiledCssContent).toMatchSnapshot('compiled css content');
+
+    // Clean up the PostCSS file
+    await rm(compiledCssPath).catch(() => undefined);
   });
 });

@@ -208,3 +208,6 @@ dist
 # Generated CSS type definition files in fixtures
 e2e/fixtures/styles/*.css.d.ts
 
+# Generated PostCSS files
+_compiled*.css
+

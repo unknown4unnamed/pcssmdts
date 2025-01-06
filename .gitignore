@@ -205,3 +205,9 @@ dist
 
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 
+# Generated CSS type definition files in fixtures
+e2e/fixtures/styles/*.css.d.ts
+
+# Generated PostCSS files
+_compiled*.css
+

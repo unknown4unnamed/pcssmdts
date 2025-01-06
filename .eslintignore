@@ -1,1 +1,4 @@
 dist
+coverage
+*postcss.config.js
+*.css.d.ts

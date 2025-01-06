@@ -157,7 +157,7 @@ jobs:
 
           sed -i.bak -E \
             -e "s|!\[Coverage\]\([^)]*\)|![Coverage]($COVERAGE_BADGE)|" \
-            -e "s|!\[npm\]\([^)]*\)|![npm]($VERSION_BADGE)|" \
+            -e "s|!\[npm\]\([^)]*\)\(](\[^)]*)\)?|[![npm]($VERSION_BADGE)](https://www.npmjs.com/package/pcssmdts)|" \
             README.md
 
       - name: Commit and push badges

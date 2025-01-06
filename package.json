@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/unknown4unnamed/pcssmdts#readme",
   "engines": {
-    "node": ">=16.20.2 <21"
+    "node": ">=16.19.1 <21"
   },
   "ntl": {
     "runner": "pnpm"

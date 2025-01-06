@@ -1,9 +1,11 @@
-import path from 'path';
+import { resolve } from 'path';
 
 import type { BuildOptions } from 'esbuild';
-import { type Options } from 'tsup';
+import { type Options, defineConfig } from 'tsup';
 
-export default {
+import { dependencies } from './package.json';
+
+export default defineConfig({
   entry: ['src/index.ts'],
   format: ['cjs'],
   target: 'es2021',
@@ -12,22 +14,14 @@ export default {
   clean: true,
   bundle: true,
   splitting: false,
-  shebang: '#!/usr/bin/env node',
-  external: [
-    'chalk',
-    'fast-glob',
-    'fs-extra',
-    'postcss',
-    'postcss-load-config',
-    'typed-css-modules',
-    'yargs',
-  ],
+  external: Object.keys(dependencies),
   treeshake: true,
   outDir: 'dist',
+  noExternal: [],
   esbuildOptions: (options: BuildOptions) => {
     options.alias = {
-      '@': path.resolve(__dirname, './src'),
+      '@': resolve(__dirname, './src'),
     };
     options.resolveExtensions = ['.ts', '.js', '.d.ts'];
   },
-} as Options;
+} satisfies Options);

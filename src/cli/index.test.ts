@@ -157,7 +157,7 @@ describe('CLI', () => {
       await commandHandler({
         source: 'src/**/*.module.css',
         verbose: true,
-        configPath: 'custom.config.js',
+        config: 'custom.config.js',
         keep: true,
         namedExports: true,
         $0: '',

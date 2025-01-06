@@ -73,8 +73,6 @@ describe('E2E CLI Tests', () => {
       '"./fixtures/styles/invalid.module.css" --config ./fixtures/postcss.config.js'
     );
 
-    console.log('\nActual error output:\n', output, '\n');
-
     expect(output).toContain('An error occurred during generation');
     expect(output).toContain('CSS syntax error in');
     expect(output).toContain('invalid.module.css');
@@ -95,8 +93,6 @@ describe('E2E CLI Tests', () => {
       `"./fixtures/styles/valid.module.css" --config ${nonStandardConfig}`
     );
 
-    console.log('\nActual error output:\n', output, '\n');
-
     expect(output).toContain('An error occurred during generation');
     expect(output).toContain('PostCSS config file not found at path');
     expect(output).toContain(nonStandardConfig);
@@ -106,8 +102,6 @@ describe('E2E CLI Tests', () => {
     const output = runCLI(
       '"./fixtures/styles/valid.module.css" --config ./fixtures/configs/invalid/postcss.config.js'
     );
-
-    console.log('\nActual error output:\n', output, '\n');
 
     expect(output).toContain('An error occurred during generation');
     expect(output).toContain("Cannot find module 'non-existent-plugin'");
@@ -136,8 +130,6 @@ describe('E2E CLI Tests', () => {
     const output = runCLI(
       '"./fixtures/styles/empty.module.css" --config ./fixtures/postcss.config.js --verbose'
     );
-
-    console.log('\nActual output:\n', output, '\n');
 
     // Should contain warning about empty file
     expect(output).toContain('Empty file detected');

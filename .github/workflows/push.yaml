@@ -129,25 +129,41 @@ jobs:
   update-badge:
     needs: release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          ref: main
 
       - name: Download coverage report
         uses: actions/download-artifact@v3
         with:
           name: coverage-report
+          path: coverage
 
-      - name: Update README badge
+      - name: Get latest version
+        id: version
         run: |
-          BADGE_URL=$(cat coverage/badge.txt)
-          sed -i "s|!\[Coverage\]([^)]*)|![Coverage]($BADGE_URL)|" README.md
+          VERSION=$(npm view pcssmdts version)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Commit and push badge
+      - name: Update badges
+        run: |
+          COVERAGE=$(cat coverage/coverage-summary.json | jq -r '.total.lines.pct')
+          COLOR=$(if [ $COVERAGE -gt 90 ]; then echo 'brightgreen'; elif [ $COVERAGE -gt 80 ]; then echo 'green'; elif [ $COVERAGE -gt 70 ]; then echo 'yellowgreen'; elif [ $COVERAGE -gt 60 ]; then echo 'yellow'; else echo 'red'; fi)
+          COVERAGE_BADGE="https://img.shields.io/badge/coverage-$COVERAGE%25-$COLOR"
+          VERSION_BADGE="https://img.shields.io/badge/npm-v${{ steps.version.outputs.version }}-blue"
+
+          sed -i.bak -E \
+            -e "s|!\[Coverage\]\([^)]*\)|![Coverage]($COVERAGE_BADGE)|" \
+            -e "s|!\[npm\]\([^)]*\)|![npm]($VERSION_BADGE)|" \
+            README.md
+
+      - name: Commit and push badges
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add README.md
-          git commit -m "docs: update coverage badge [skip ci]" || exit 0
+          git commit -m "docs: update badges [skip ci]" || exit 0
           git push

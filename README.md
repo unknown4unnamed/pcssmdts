@@ -134,6 +134,8 @@ export const Button: React.FC<{
 
 ## CLI Options
 
+The CLI is powered by [typed-css-modules](https://github.com/Quramy/typed-css-modules) under the hood, providing robust TypeScript definition generation.
+
 ```
 pcssmdts <source> [options]
 
@@ -146,8 +148,13 @@ Basic options:
   -k, --keep              Keep compiled CSS files                      [boolean]
   -w, --watch             Watch mode for file changes                  [boolean]
 
-TypeScript options:
+typed-css-modules options:
   -n, --namedExports      Use named exports in .d.ts files    [boolean] [default: false]
+  --camelCase             Convert CSS class names to camelCase [choices: "true", "false", "dashes"]
+  --searchDir             Directory to search for CSS Modules   [string]
+  --outDir               Output directory for generated d.ts files [string]
+  --dropExtension        Drop the input file extension in output [boolean]
+  --eol                  End of line character                   [string]
 
 General:
   --help                  Show help information                        [boolean]
@@ -174,16 +181,78 @@ General:
    pcssmdts "src/**/*.module.css" -c ./config/postcss.config.js
    ```
 
-4. **Named Exports**
+4. **Named Exports with Custom Output Directory**
 
    ```sh
-   pcssmdts "src/**/*.module.css" -n
+   pcssmdts "src/**/*.module.css" -n --outDir types
    ```
 
-5. **Keep Compiled Files**
+5. **CamelCase with Dashes**
+
    ```sh
-   pcssmdts "src/**/*.module.css" -k
+   pcssmdts "src/**/*.module.css" --camelCase dashes
    ```
+
+6. **Keep Compiled Files with Custom EOL**
+
+   ```sh
+   pcssmdts "src/**/*.module.css" -k --eol "\n"
+   ```
+
+7. **Drop Extension with Search Directory**
+   ```sh
+   pcssmdts "src/**/*.module.css" --dropExtension --searchDir src
+   ```
+
+### Watch Mode
+
+Watch mode (`-w` or `--watch`) automatically regenerates TypeScript definitions when your CSS modules change. Here's how to verify it's working:
+
+1. **Start Watch Mode**
+
+   ```sh
+   pcssmdts "src/**/*.module.css" -w
+   ```
+
+2. **Verify Initial Generation**
+
+   - Check that `.d.ts` files are generated for all your CSS modules
+   - You should see console output indicating the initial generation
+
+3. **Test File Changes**
+
+   ```sh
+   # 1. Open your CSS module in an editor
+   # 2. Add a new class
+   .new-class {
+     color: red;
+   }
+   # 3. Save the file
+   ```
+
+   The watcher should automatically:
+
+   - Detect the file change
+   - Regenerate the `.d.ts` file
+   - Show console output about the regeneration
+
+4. **Verify Type Updates**
+
+   ```tsx
+   // Your component file
+   import styles from './styles.module.css';
+
+   // The new class should be available with TypeScript intellisense
+   <div className={styles.newClass} />; // If using camelCase
+   ```
+
+5. **Common Watch Mode Issues**
+   - If changes aren't detected, ensure you're watching the correct directory
+   - Some IDEs may need to refresh the TypeScript server to pick up new definitions
+   - Use `-v` flag for verbose logging to debug watch mode issues:
+     ```sh
+     pcssmdts "src/**/*.module.css" -w -v
+     ```
 
 ## PostCSS Configuration
 
@@ -215,7 +284,7 @@ module.exports = {
 
    ```
    **/*.module.css.d.ts
-   **/__postcss__*.css
+   **/_compiled.*.css
    ```
 
 2. **CI Integration**

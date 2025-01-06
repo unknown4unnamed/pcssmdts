@@ -22,6 +22,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
+          registry-url: 'https://registry.npmjs.org'
 
       - uses: pnpm/action-setup@v2
         with:
@@ -44,38 +45,12 @@ jobs:
       - name: Run tests
         run: pnpm test
 
-  release:
-    needs: validate
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, '[skip ci]')
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-
-      - name: Use Node.js 20
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20.8.1
-          registry-url: 'https://registry.npmjs.org'
-
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Setup PNPM
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-          run_install: false
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Build
+        run: pnpm build
 
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          pnpm add -D semantic-release @semantic-release/changelog @semantic-release/git
-          pnpm semantic-release
+        if: github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, '[skip ci]')
+        run: pnpm semantic-release

@@ -24,7 +24,10 @@
   },
   "homepage": "https://github.com/unknown4unnamed/pcssmdts#readme",
   "engines": {
-    "node": ">=14"
+    "node": ">=16.20.2 <21"
+  },
+  "ntl": {
+    "runner": "pnpm"
   },
   "keywords": [
     "PostCSS",
@@ -35,40 +38,93 @@
   "scripts": {
     "dev": "tsc -p . -w",
     "build": "rimraf ./dist && tsc -p . ",
-    "prettify": "prettier --single-quote index.ts",
-    "format": "yarn prettify --write && eslint . --fix"
+    "prettify": "prettier index.ts",
+    "format": "pnpm prettify --write && eslint . --fix"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "tabWidth": 2,
+    "semi": true,
+    "printWidth": 80,
+    "bracketSpacing": true,
+    "arrowParens": "always",
+    "endOfLine": "lf"
   },
   "dependencies": {
-    "chalk": "4.1.2",
-    "fast-glob": "^3.2.11",
+    "chalk": "^4.1.2",
+    "fast-glob": "^3.3.0",
     "fs-extra": "^10.1.0",
     "postcss": "^8.4.14",
-    "postcss-load-config": "^4.0.1",
+    "postcss-load-config": "^4.0.2",
     "typed-css-modules": "^0.7.2",
-    "yargs": "^17.5.1"
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.13",
-    "@types/node": "^14.0.40",
-    "@types/yargs": "^17.0.10",
-    "@typescript-eslint/eslint-plugin": "^5.27.0",
-    "@typescript-eslint/parser": "^5.27.0",
-    "eslint": "^8.17.0",
-    "eslint-config-prettier": "^8.5.0",
-    "prettier": "^2.6.2",
-    "rimraf": "^3.0.2",
-    "typescript": "^4.7.3"
+    "@types/node": "^16.18.68",
+    "@types/yargs": "^17.0.32",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "eslint": "8.56.0",
+    "eslint-config-prettier": "^8.10.0",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-prettier": "^4.2.1",
+    "prettier": "^2.8.8",
+    "rimraf": "^5.0.5",
+    "typescript": "^4.9.5"
   },
   "eslintConfig": {
     "root": true,
     "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "project": "./tsconfig.json",
+      "ecmaVersion": 2022,
+      "sourceType": "module"
+    },
+    "env": {
+      "node": true,
+      "es2022": true
+    },
     "plugins": [
-      "@typescript-eslint"
+      "@typescript-eslint",
+      "import",
+      "prettier"
     ],
     "extends": [
       "eslint:recommended",
       "plugin:@typescript-eslint/recommended",
-      "prettier"
-    ]
+      "plugin:@typescript-eslint/recommended-requiring-type-checking",
+      "plugin:import/recommended",
+      "plugin:import/typescript",
+      "plugin:prettier/recommended"
+    ],
+    "settings": {
+      "import/resolver": {
+        "typescript": true,
+        "node": true
+      }
+    },
+    "rules": {
+      "prettier/prettier": "error",
+      "import/order": [
+        "error",
+        {
+          "groups": [
+            "builtin",
+            "external",
+            "internal",
+            "parent",
+            "sibling",
+            "index"
+          ],
+          "newlines-between": "always",
+          "alphabetize": {
+            "order": "asc"
+          }
+        }
+      ]
+    }
   }
 }

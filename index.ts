@@ -1,20 +1,15 @@
 #!/usr/bin/env node
 
+import path from 'path';
+
 import chalk from 'chalk';
-import yargs from 'yargs';
-import { hideBin } from 'yargs/helpers';
-import fs from 'fs-extra';
-import glob from 'fast-glob';
+import fastGlob from 'fast-glob';
+import { readFile, remove, rename, writeFile } from 'fs-extra';
 import postcss from 'postcss';
 import postcssrc from 'postcss-load-config';
 import DtsCreator from 'typed-css-modules';
-import path from 'path';
-
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-const logger = (enable: boolean) => (enable ? console.log : () => {});
-
-const COMPILED_CSS_PREFIX = '__postcss__';
-const TYPE_DEF_FILE_EXT = 'd.ts';
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
 
 type Params = {
   verbose: boolean;
@@ -23,23 +18,30 @@ type Params = {
   namedExports: boolean;
 };
 
+const COMPILED_CSS_PREFIX = '__postcss__';
+const TYPE_DEF_FILE_EXT = 'd.ts';
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const logger = (enable: boolean) => (enable ? console.log : () => {});
+
 const run = async (
   source: string,
   { verbose, configPath, namedExports, keep = false }: Params
-) => {
+): Promise<void> => {
   const log = logger(verbose);
 
   log(chalk.greenBright(`\nGenerating d.ts for "${source}"\n`));
 
-  if (keep)
+  if (keep) {
     log(
       chalk.bgYellowBright.red(
         '\nAttention, you are preserving compiled css files!\n'
       )
     );
+  }
 
   try {
-    const filesMatch = await glob(source);
+    const filesMatch = await fastGlob(source);
     const cssModules = filesMatch.filter(
       (p) => !p.includes(COMPILED_CSS_PREFIX)
     );
@@ -73,12 +75,12 @@ const run = async (
         cssModuleFilePath
       )}/${COMPILED_CSS_PREFIX}${path.basename(cssModuleFilePath)}`;
 
-      const css = await fs.readFile(cssModuleFilePath, 'utf-8');
+      const css = await readFile(cssModuleFilePath, 'utf-8');
       const compiled = await postcss(plugins).process(css, {
         from: undefined,
       });
 
-      await fs.writeFile(compiledCSSFilePath, compiled.css);
+      await writeFile(compiledCSSFilePath, compiled.css);
 
       log(chalk.magenta(`compiled ${compiledCSSFilePath}`));
 
@@ -87,7 +89,7 @@ const run = async (
       await dtsContent.writeFile();
 
       if (!keep) {
-        await fs.remove(compiledCSSFilePath);
+        await remove(compiledCSSFilePath);
         log(
           chalk.grey(`compiled file has been removed ${compiledCSSFilePath}`)
         );
@@ -98,19 +100,23 @@ const run = async (
         ''
       )}.${TYPE_DEF_FILE_EXT}`;
 
-      await fs.rename(
-        `${compiledCSSFilePath}.${TYPE_DEF_FILE_EXT}`,
-        dtsFilename
-      );
+      await rename(`${compiledCSSFilePath}.${TYPE_DEF_FILE_EXT}`, dtsFilename);
 
       log(chalk.green(`generated d.ts ${dtsFilename}\n`));
     }
   } catch (error) {
-    log(chalk.red(`An error occurred during generation: ${error}`));
+    log(
+      chalk.red(
+        `An error occurred during generation: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      )
+    );
+    process.exit(1);
   }
 };
 
-yargs(hideBin(process.argv))
+void yargs(hideBin(process.argv))
   .group(['verbose', 'config', 'keep'], 'Basic options:')
   .option('verbose', {
     alias: 'v',

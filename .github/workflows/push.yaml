@@ -22,10 +22,19 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
+          registry-url: 'https://registry.npmjs.org'
 
       - uses: pnpm/action-setup@v2
         with:
           version: 8
+
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -33,37 +42,45 @@ jobs:
       - name: Type check
         run: pnpm type-check
 
+      - name: Run tests
+        run: pnpm test
+
   release:
     needs: validate
     runs-on: ubuntu-latest
-    if: '!contains(github.event.head_commit.message, "ci skip") && !contains(github.event.head_commit.message, "skip ci")'
+    if: github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, '[skip ci]')
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          persist-credentials: false
 
-      - name: Use Node.js 18.x
+      - name: Use Node.js 16.x
         uses: actions/setup-node@v3
         with:
-          node-version: 18.x
+          node-version: 16.19.1
+          registry-url: 'https://registry.npmjs.org'
 
       - uses: pnpm/action-setup@v2
         with:
           version: 8
 
-      - name: Cache node modules
-        uses: actions/cache@v3
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
         with:
-          path: node_modules
-          key: pnpm-deps-${{ hashFiles('pnpm-lock.yaml') }}
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            pnpm-deps-${{ hashFiles('pnpm-lock.yaml') }}
+            ${{ runner.os }}-pnpm-
 
-      - name: Create Release
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          pnpm install --frozen-lockfile
-          pnpm build
-          pnpm exec auto shipit
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: pnpm dlx semantic-release

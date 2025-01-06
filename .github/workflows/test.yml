@@ -26,6 +26,8 @@ jobs:
         with:
           version: 8.15.6
       - run: pnpm install
+      - name: Type Check
+        run: tsc --noEmit
       - run: pnpm build
       - name: Run tests with coverage
         run: pnpm test:coverage

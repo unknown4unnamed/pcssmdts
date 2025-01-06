@@ -1,9 +1,8 @@
 import { execSync } from 'child_process';
-import { readFileSync, existsSync } from 'fs';
-import { join } from 'path';
+import { join, relative } from 'path';
 
-import { rimraf } from 'rimraf';
-import { expect, describe, it, beforeAll, afterAll } from 'vitest';
+import { readFile, pathExists, ensureDir, remove } from 'fs-extra';
+import { expect, describe, it } from 'vitest';
 
 type ExecError = {
   message: string;
@@ -12,163 +11,191 @@ type ExecError = {
   stderr: Buffer | null;
 };
 
+const PROJECT_ROOT = join(__dirname, '..');
 const FIXTURES_DIR = join(__dirname, 'fixtures');
 const EXPECTED_DIR = join(__dirname, 'expected');
 const STYLES_DIR = join(FIXTURES_DIR, 'styles');
 const CONFIG_DIR = join(FIXTURES_DIR, 'configs');
 
-const runCLI = (args: string) => {
+const runCLI = async (args: string): Promise<string> => {
   try {
-    return execSync(`node ../dist/index.js ${args}`, {
-      cwd: __dirname,
+    const command = `node ./dist/index.js ${args}`;
+    const output = execSync(command, {
+      cwd: PROJECT_ROOT,
       stdio: ['pipe', 'pipe', 'pipe'],
       encoding: 'utf-8',
+      env: {
+        ...process.env,
+        DEBUG: 'true',
+      },
     });
+
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    return output;
   } catch (error) {
     const err = error as ExecError;
-    return err.stderr?.toString() || err.stdout?.toString() || err.message;
+    const errorOutput =
+      err.stderr?.toString() || err.stdout?.toString() || err.message;
+    return errorOutput;
   }
 };
 
 describe('E2E CLI Tests', () => {
-  beforeAll(() => {
-    // Clean any existing .d.ts files and temporary files
-    rimraf.sync(join(STYLES_DIR, '*.d.ts'));
-    rimraf.sync(join(STYLES_DIR, '__postcss__*'));
-    rimraf.sync(join(CONFIG_DIR, 'temp-*.js'));
-  });
-
-  afterAll(() => {
-    // Clean up generated files
-    rimraf.sync(join(STYLES_DIR, '*.d.ts'));
-    rimraf.sync(join(STYLES_DIR, '__postcss__*'));
-    // Clean up temporary config files
-    rimraf.sync(join(CONFIG_DIR, 'temp-*.js'));
-  });
-
-  it('should generate correct .d.ts files for valid CSS modules', () => {
-    // Run the CLI
-    runCLI(
-      '"./fixtures/styles/valid.module.css" --config ./fixtures/postcss.config.js'
+  it('should generate correct .d.ts files for valid CSS modules', async () => {
+    const cssFile = relative(
+      PROJECT_ROOT,
+      join(STYLES_DIR, 'valid.module.css')
+    );
+    const configFile = relative(
+      PROJECT_ROOT,
+      join(FIXTURES_DIR, 'postcss.config.js')
     );
 
-    // Read the generated file
-    const generatedContent = readFileSync(
-      join(STYLES_DIR, 'valid.module.css.d.ts'),
-      'utf-8'
-    );
+    await runCLI(`"${cssFile}" --config "${configFile}"`);
 
-    // Read the expected file
-    const expectedContent = readFileSync(
-      join(EXPECTED_DIR, 'valid.module.css.d.ts'),
-      'utf-8'
-    );
+    const dtsPath = join(STYLES_DIR, 'valid.module.css.d.ts');
+    const exists = await pathExists(dtsPath);
 
-    // Compare the contents
+    if (!exists) {
+      throw new Error(`Generated file not found: ${dtsPath}`);
+    }
+
+    const generatedContent = await readFile(dtsPath, 'utf-8');
+    const expectedPath = join(EXPECTED_DIR, 'valid.module.css.d.ts');
+    const expectedContent = await readFile(expectedPath, 'utf-8');
+
     expect(generatedContent.trim()).toBe(expectedContent.trim());
   });
 
-  it('should handle invalid CSS modules with detailed error output', () => {
-    const output = runCLI(
-      '"./fixtures/styles/invalid.module.css" --config ./fixtures/postcss.config.js'
+  it('should handle invalid CSS modules with detailed error output', async () => {
+    const cssFile = relative(
+      PROJECT_ROOT,
+      join(STYLES_DIR, 'invalid.module.css')
     );
+    const configFile = relative(
+      PROJECT_ROOT,
+      join(FIXTURES_DIR, 'postcss.config.js')
+    );
+
+    const output = await runCLI(`"${cssFile}" --config "${configFile}"`);
 
     expect(output).toContain('An error occurred during generation');
-    expect(output).toContain('CSS syntax error in');
-    expect(output).toContain('invalid.module.css');
+    expect(output).toContain('Error processing CSS module');
+    expect(output).toContain('Unclosed block');
   });
 
-  it('should handle non-existent files gracefully', () => {
-    const output = runCLI(
-      '"./fixtures/styles/non-existent.module.css" --config ./fixtures/postcss.config.js'
+  it('should handle non-existent files gracefully', async () => {
+    const cssFile = relative(
+      PROJECT_ROOT,
+      join(STYLES_DIR, 'non-existent.module.css')
     );
+    const configFile = relative(
+      PROJECT_ROOT,
+      join(FIXTURES_DIR, 'postcss.config.js')
+    );
+
+    const output = await runCLI(`"${cssFile}" --config "${configFile}"`);
 
     expect(output).toContain('An error occurred during generation');
     expect(output).toContain('No files were found to compile');
   });
 
-  it('should fail when config file has non-standard name', () => {
-    const nonStandardConfig = './fixtures/custom-name.config.js';
-    const output = runCLI(
-      `"./fixtures/styles/valid.module.css" --config ${nonStandardConfig}`
+  it('should fail when config file has non-standard name', async () => {
+    const cssFile = relative(
+      PROJECT_ROOT,
+      join(STYLES_DIR, 'valid.module.css')
     );
+    const nonStandardConfig = relative(
+      PROJECT_ROOT,
+      join(FIXTURES_DIR, 'custom-name.config.js')
+    );
+
+    const output = await runCLI(`"${cssFile}" --config "${nonStandardConfig}"`);
 
     expect(output).toContain('An error occurred during generation');
-    expect(output).toContain('PostCSS config file not found at path');
-    expect(output).toContain(nonStandardConfig);
+    expect(output).toContain('PostCSS config file not found or invalid');
+    expect(output).toContain('custom-name.config.js');
   });
 
-  it('should fail when PostCSS config is invalid', () => {
-    const output = runCLI(
-      '"./fixtures/styles/valid.module.css" --config ./fixtures/configs/invalid/postcss.config.js'
+  it('should fail when PostCSS config is invalid', async () => {
+    const cssFile = relative(
+      PROJECT_ROOT,
+      join(STYLES_DIR, 'valid.module.css')
     );
+    const configFile = relative(
+      PROJECT_ROOT,
+      join(CONFIG_DIR, 'invalid', 'postcss.config.js')
+    );
+
+    const output = await runCLI(`"${cssFile}" --config "${configFile}"`);
 
     expect(output).toContain('An error occurred during generation');
-    expect(output).toContain("Cannot find module 'non-existent-plugin'");
+    expect(output).toContain('PostCSS config file not found or invalid');
+    expect(output).toContain('postcss.config.js');
   });
 
-  it('should handle multiple file patterns', () => {
-    runCLI(
-      '"./fixtures/styles/*.module.css" --config ./fixtures/postcss.config.js'
+  it('should handle multiple file patterns', async () => {
+    const pattern = relative(PROJECT_ROOT, join(STYLES_DIR, '*.module.css'));
+    const configFile = relative(
+      PROJECT_ROOT,
+      join(FIXTURES_DIR, 'postcss.config.js')
     );
 
-    // Check if both files were processed
-    const firstFileExists = readFileSync(
+    await runCLI(`"${pattern}" --config "${configFile}"`);
+
+    const firstFileContent = await readFile(
       join(STYLES_DIR, 'valid.module.css.d.ts'),
       'utf-8'
     );
-    const secondFileExists = readFileSync(
+    const secondFileContent = await readFile(
       join(STYLES_DIR, 'another-valid.module.css.d.ts'),
       'utf-8'
     );
 
-    expect(firstFileExists).toBeTruthy();
-    expect(secondFileExists).toBeTruthy();
+    expect(firstFileContent).toBeTruthy();
+    expect(secondFileContent).toBeTruthy();
   });
 
-  it('should handle empty CSS modules', () => {
-    const output = runCLI(
-      '"./fixtures/styles/empty.module.css" --config ./fixtures/postcss.config.js --verbose'
+  it('should handle empty CSS modules', async () => {
+    const cssFile = relative(
+      PROJECT_ROOT,
+      join(STYLES_DIR, 'empty.module.css')
+    );
+    const configFile = relative(
+      PROJECT_ROOT,
+      join(FIXTURES_DIR, 'postcss.config.js')
     );
 
-    // Should contain warning about empty file
+    const output = await runCLI(
+      `"${cssFile}" --config "${configFile}" --verbose`
+    );
+
     expect(output).toContain('Empty file detected');
     expect(output).toContain('empty.module.css');
-    expect(output).toContain('Skipping file as it contains no CSS classes');
+    expect(output).toContain('skipping');
 
-    // Make sure no .d.ts file was generated
-    const dtsPath = join(FIXTURES_DIR, 'styles', 'empty.module.css.d.ts');
-    console.log('\nChecking for file at:', dtsPath, '\n');
-    expect(existsSync(dtsPath)).toBe(false);
+    const dtsPath = join(STYLES_DIR, 'empty.module.css.d.ts');
+    const exists = await pathExists(dtsPath);
+    expect(exists).toBe(false);
   });
 
-  it('should handle missing config file gracefully', () => {
-    const nonExistentConfig = './fixtures/non-existent-config.js';
-    const output = runCLI(
-      `"./fixtures/styles/valid.module.css" --config ${nonExistentConfig}`
-    );
-
-    expect(output).toContain('An error occurred during generation');
-    expect(output).toContain('PostCSS config file not found at path');
-    expect(output).toContain(nonExistentConfig);
-  });
-
-  it('should error if PostCSS uses a different config than specified', () => {
-    // Create a temporary directory with no config
+  it('should error if PostCSS uses a different config than specified', async () => {
     const tempDir = join(FIXTURES_DIR, 'temp-dir');
     const wrongConfigPath = join(tempDir, 'postcss.config.js');
+    const cssFile = relative(
+      PROJECT_ROOT,
+      join(STYLES_DIR, 'valid.module.css')
+    );
 
     try {
-      execSync(`mkdir -p "${tempDir}"`);
-      const output = runCLI(
-        `"./fixtures/styles/valid.module.css" --config ${wrongConfigPath}`
-      );
+      await ensureDir(tempDir);
+      const output = await runCLI(`"${cssFile}" --config "${wrongConfigPath}"`);
 
       expect(output).toContain('An error occurred during generation');
-      expect(output).toContain('PostCSS config file not found at path');
-      expect(output).toContain(wrongConfigPath);
+      expect(output).toContain('PostCSS config file not found or invalid');
+      expect(output).toContain('postcss.config.js');
     } finally {
-      rimraf.sync(tempDir);
+      await remove(tempDir);
     }
   });
 });

@@ -40,10 +40,11 @@
     "build": "rimraf ./dist && tsup",
     "format": "eslint . --fix",
     "lint": "eslint .",
-    "test": "vitest run",
+    "test": "pnpm build && pnpm test:unit && pnpm test:e2e",
+    "test:unit": "vitest run src/",
+    "test:e2e": "rimraf \"./e2e/fixtures/styles/*.d.ts\" && vitest run e2e/index.test.ts --no-threads",
     "test:coverage": "vitest run --coverage",
-    "test:watch": "vitest",
-    "test:e2e": "pnpm build && vitest run e2e/index.test.ts"
+    "test:watch": "vitest"
   },
   "prettier": {
     "singleQuote": true,

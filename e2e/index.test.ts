@@ -48,7 +48,7 @@ describe('E2E CLI Tests', () => {
     );
     const configFile = relative(
       PROJECT_ROOT,
-      join(FIXTURES_DIR, 'postcss.config.js')
+      join(CONFIG_DIR, 'postcss.config.js')
     );
 
     await runCLI(`"${cssFile}" --config "${configFile}"`);
@@ -74,7 +74,7 @@ describe('E2E CLI Tests', () => {
     );
     const configFile = relative(
       PROJECT_ROOT,
-      join(FIXTURES_DIR, 'postcss.config.js')
+      join(CONFIG_DIR, 'postcss.config.js')
     );
 
     const output = await runCLI(`"${cssFile}" --config "${configFile}"`);
@@ -91,7 +91,7 @@ describe('E2E CLI Tests', () => {
     );
     const configFile = relative(
       PROJECT_ROOT,
-      join(FIXTURES_DIR, 'postcss.config.js')
+      join(CONFIG_DIR, 'postcss.config.js')
     );
 
     const output = await runCLI(`"${cssFile}" --config "${configFile}"`);
@@ -138,7 +138,7 @@ describe('E2E CLI Tests', () => {
     const pattern = relative(PROJECT_ROOT, join(STYLES_DIR, '*.module.css'));
     const configFile = relative(
       PROJECT_ROOT,
-      join(FIXTURES_DIR, 'postcss.config.js')
+      join(CONFIG_DIR, 'postcss.config.js')
     );
 
     await runCLI(`"${pattern}" --config "${configFile}"`);
@@ -163,7 +163,7 @@ describe('E2E CLI Tests', () => {
     );
     const configFile = relative(
       PROJECT_ROOT,
-      join(FIXTURES_DIR, 'postcss.config.js')
+      join(CONFIG_DIR, 'postcss.config.js')
     );
 
     const output = await runCLI(

@@ -14,6 +14,13 @@ import {
 } from '@/types/index';
 import { logger } from '@/utils/logger';
 
+export class GeneratorError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'GeneratorError';
+  }
+}
+
 export const run = async (
   source: string,
   { verbose, configPath, namedExports, keep = false }: Params
@@ -37,12 +44,31 @@ export const run = async (
     );
 
     if (!cssModules.length) {
-      throw new Error(
+      throw new GeneratorError(
         'No files were found to compile, please check your glob pattern'
       );
     }
 
+    // Check if config file exists
+    try {
+      await readFile(configPath, 'utf-8');
+    } catch (error) {
+      throw new GeneratorError(
+        `PostCSS config file not found at path: ${configPath}`
+      );
+    }
+
     const { plugins, file } = await postcssrc(undefined, configPath);
+
+    // Normalize paths for comparison
+    const normalizedConfigPath = path.resolve(configPath);
+    const normalizedFile = path.resolve(file);
+
+    if (normalizedConfigPath !== normalizedFile) {
+      throw new GeneratorError(
+        `Expected to use config at ${configPath}, but PostCSS used ${file} instead`
+      );
+    }
 
     log(chalk.cyan(`Loaded PostCSS config file from path: \n${file}`));
     log(
@@ -61,47 +87,95 @@ export const run = async (
     for (const cssModuleFilePath of cssModules) {
       log(chalk.yellowBright(`\ncompiling ${cssModuleFilePath}`));
 
-      const compiledCSSFilePath = `${path.dirname(
-        cssModuleFilePath
-      )}/${COMPILED_CSS_PREFIX}${path.basename(cssModuleFilePath)}`;
+      try {
+        const css = await readFile(cssModuleFilePath, 'utf-8');
 
-      const css = await readFile(cssModuleFilePath, 'utf-8');
-      const compiled = await postcss(plugins).process(css, {
-        from: undefined,
-      });
+        if (!css.trim()) {
+          log(chalk.yellow(`\nEmpty file detected: ${cssModuleFilePath}`));
+          log(chalk.dim('File content length:', css.length));
+          log(chalk.dim('Raw content:', JSON.stringify(css)));
+          log(chalk.yellow('Skipping file as it contains no CSS classes\n'));
+          continue;
+        }
 
-      await writeFile(compiledCSSFilePath, compiled.css);
+        const compiledCSSFilePath = `${path.dirname(
+          cssModuleFilePath
+        )}/${COMPILED_CSS_PREFIX}${path.basename(cssModuleFilePath)}`;
 
-      log(chalk.magenta(`compiled ${compiledCSSFilePath}`));
+        try {
+          const compiled = await postcss(plugins).process(css, {
+            from: cssModuleFilePath,
+          });
 
-      const dtsContent = await creator.create(compiledCSSFilePath);
+          if (!compiled.css.trim()) {
+            log(
+              chalk.yellow(
+                `No CSS classes found in compiled file: ${cssModuleFilePath}`
+              )
+            );
+            // Clean up any existing .d.ts file
+            const dtsFilename = `${cssModuleFilePath}.${TYPE_DEF_FILE_EXT}`;
+            await remove(dtsFilename);
+            continue;
+          }
 
-      await dtsContent.writeFile();
+          await writeFile(compiledCSSFilePath, compiled.css);
+        } catch (error) {
+          throw new GeneratorError(
+            `CSS syntax error in ${cssModuleFilePath}: ${
+              error instanceof Error ? error.message : String(error)
+            }`
+          );
+        }
 
-      if (!keep) {
-        await remove(compiledCSSFilePath);
-        log(
-          chalk.grey(`compiled file has been removed ${compiledCSSFilePath}`)
+        log(chalk.magenta(`compiled ${compiledCSSFilePath}`));
+
+        const dtsContent = await creator.create(compiledCSSFilePath);
+
+        if (!Object.keys(dtsContent.formatted).length) {
+          log(
+            chalk.yellow(`No CSS classes to export in: ${cssModuleFilePath}`)
+          );
+          await remove(compiledCSSFilePath);
+          // Clean up any existing .d.ts file
+          const dtsFilename = `${cssModuleFilePath}.${TYPE_DEF_FILE_EXT}`;
+          await remove(dtsFilename);
+          continue;
+        }
+
+        await dtsContent.writeFile();
+
+        if (!keep) {
+          await remove(compiledCSSFilePath);
+          log(
+            chalk.grey(`compiled file has been removed ${compiledCSSFilePath}`)
+          );
+        }
+
+        const dtsFilename = `${compiledCSSFilePath.replace(
+          COMPILED_CSS_PREFIX,
+          ''
+        )}.${TYPE_DEF_FILE_EXT}`;
+
+        await rename(
+          `${compiledCSSFilePath}.${TYPE_DEF_FILE_EXT}`,
+          dtsFilename
+        );
+
+        log(chalk.green(`generated d.ts ${dtsFilename}\n`));
+      } catch (error) {
+        throw new GeneratorError(
+          `Error processing CSS module ${cssModuleFilePath}: ${
+            error instanceof Error ? error.message : String(error)
+          }`
         );
       }
-
-      const dtsFilename = `${compiledCSSFilePath.replace(
-        COMPILED_CSS_PREFIX,
-        ''
-      )}.${TYPE_DEF_FILE_EXT}`;
-
-      await rename(`${compiledCSSFilePath}.${TYPE_DEF_FILE_EXT}`, dtsFilename);
-
-      log(chalk.green(`generated d.ts ${dtsFilename}\n`));
     }
   } catch (error) {
-    log(
-      chalk.red(
-        `An error occurred during generation: ${
-          error instanceof Error ? error.message : String(error)
-        }`
-      )
-    );
-    process.exit(1);
+    const errorMessage = `An error occurred during generation: ${
+      error instanceof Error ? error.message : String(error)
+    }`;
+    log(chalk.red(errorMessage));
+    throw new GeneratorError(errorMessage);
   }
 };

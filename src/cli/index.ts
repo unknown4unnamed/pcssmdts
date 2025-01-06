@@ -39,12 +39,17 @@ export const initCLI = () => {
           type: 'string',
         }),
       async (argv) => {
-        await run(argv.source, {
-          verbose: argv.verbose,
-          configPath: argv.config,
-          keep: argv.keep,
-          namedExports: argv.namedExports,
-        });
+        try {
+          await run(argv.source, {
+            verbose: argv.verbose,
+            configPath: argv.config,
+            keep: argv.keep,
+            namedExports: argv.namedExports,
+          });
+        } catch (error) {
+          console.error(error instanceof Error ? error.message : String(error));
+          process.exit(1);
+        }
       }
     )
     .example(

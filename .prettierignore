@@ -1,0 +1,4 @@
+dist/
+coverage/
+*.css.d.ts
+*temp-invalid-config.js

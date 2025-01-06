@@ -1,10 +1,15 @@
 [![Test](https://github.com/unknown4unnamed/pcssmdts/actions/workflows/test.yml/badge.svg)](https://github.com/unknown4unnamed/pcssmdts/actions/workflows/test.yml)
 [![npm version](https://badge.fury.io/js/pcssmdts.svg)](https://badge.fury.io/js/pcssmdts)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node Version](https://img.shields.io/badge/node-%3E%3D16.19.1%20%3C21-brightgreen)](https://nodejs.org)
 
 # pcssmdts
 
 `pcssmdts` helps you ensure that you use `classNames` that actually exists when you write your PostCSS powered CSS Modules.
+
+## Requirements
+
+- Node.js: `>=16.19.1 <21`
 
 ## Installation
 

@@ -74,12 +74,20 @@ jobs:
       - name: Run coverage
         run: pnpm test:coverage
 
-      - name: Upload coverage
-        uses: codecov/codecov-action@v3
+      - name: Generate coverage badge
+        run: |
+          COVERAGE=$(cat coverage/coverage-summary.json | jq -r '.total.lines.pct')
+          COLOR=$(if [ $COVERAGE -gt 90 ]; then echo 'brightgreen'; elif [ $COVERAGE -gt 80 ]; then echo 'green'; elif [ $COVERAGE -gt 70 ]; then echo 'yellowgreen'; elif [ $COVERAGE -gt 60 ]; then echo 'yellow'; else echo 'red'; fi)
+          echo "https://img.shields.io/badge/coverage-$COVERAGE%25-$COLOR" > coverage/badge.txt
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage/coverage-final.json
-          fail_ci_if_error: true
+          name: coverage-report
+          path: |
+            coverage/
+            coverage/badge.txt
+          retention-days: 30
 
   release:
     needs: [validate, coverage]
@@ -117,3 +125,29 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: pnpm release
+
+  update-badge:
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Download coverage report
+        uses: actions/download-artifact@v3
+        with:
+          name: coverage-report
+
+      - name: Update README badge
+        run: |
+          BADGE_URL=$(cat coverage/badge.txt)
+          sed -i "s|!\[Coverage\]([^)]*)|![Coverage]($BADGE_URL)|" README.md
+
+      - name: Commit and push badge
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add README.md
+          git commit -m "docs: update coverage badge [skip ci]" || exit 0
+          git push

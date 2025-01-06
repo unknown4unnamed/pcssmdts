@@ -1,8 +1,8 @@
 [![Test](https://github.com/unknown4unnamed/pcssmdts/actions/workflows/test.yml/badge.svg)](https://github.com/unknown4unnamed/pcssmdts/actions/workflows/test.yml)
+![Coverage](https://img.shields.io/badge/coverage-0%25-red)
 [![npm version](https://badge.fury.io/js/pcssmdts.svg)](https://badge.fury.io/js/pcssmdts)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node Version](https://img.shields.io/badge/node-%3E%3D16.19.1%20%3C21-brightgreen)](https://nodejs.org)
-[![Coverage](https://codecov.io/gh/unknown4unnamed/pcssmdts/branch/main/graph/badge.svg)](https://codecov.io/gh/unknown4unnamed/pcssmdts)
 [![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 
 # pcssmdts

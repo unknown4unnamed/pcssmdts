@@ -45,7 +45,9 @@
     "test:unit": "vitest run src/",
     "test:e2e": "rimraf \"./e2e/fixtures/styles/*.d.ts\" && vitest run e2e/index.test.ts --no-threads",
     "test:coverage": "vitest run --coverage",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:ci": "pnpm build && pnpm test:coverage",
+    "release": "semantic-release"
   },
   "lint-staged": {
     "*.ts": [

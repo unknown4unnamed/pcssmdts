@@ -39,18 +39,22 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Type check
-        run: pnpm type-check
+      - name: Build and Test
+        run: pnpm test:ci
 
-      - name: Run tests
-        run: pnpm test
+      - name: E2E Tests
+        run: pnpm test:e2e
 
-      - name: Build
-        run: pnpm build
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/coverage-final.json
+          fail_ci_if_error: true
 
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         if: github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, '[skip ci]')
-        run: pnpm semantic-release
+        run: pnpm release

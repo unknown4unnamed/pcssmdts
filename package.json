@@ -1,6 +1,6 @@
 {
   "name": "pcssmdts",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Generate d.ts files for PostCSS modules",
   "main": "dist/index.js",
   "bin": {

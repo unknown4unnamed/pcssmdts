@@ -38,7 +38,7 @@
   "scripts": {
     "prepare": "husky install",
     "dev": "tsc -p . -w",
-    "build": "rimraf ./dist && tsup",
+    "build": "rimraf ./dist && tsup && chmod +x dist/index.js",
     "lint:ci": "eslint \"src/**/*.ts\"",
     "types:ci": "tsc --noEmit",
     "test": "pnpm build && pnpm test:unit && pnpm test:e2e",

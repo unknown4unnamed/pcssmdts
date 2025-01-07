@@ -12,25 +12,16 @@ export const createCSSProcessor = (): CSSProcessor => {
   return {
     loadConfig: async (configPath: string) => {
       try {
-        const { plugins, file } = await postcssrc(undefined, configPath);
+        // If configPath is provided, use it directly
+        // Otherwise, let postcss-load-config find the nearest config
+        const searchPath = configPath === '.' ? process.cwd() : configPath;
+        const { plugins, file } = await postcssrc(undefined, searchPath);
         loadedPlugins = plugins;
-
-        // Normalize paths for comparison
-        const normalizedConfigPath = path.resolve(configPath);
-        const normalizedFile = path.resolve(file);
-
-        if (normalizedConfigPath !== normalizedFile) {
-          throw new GeneratorError(
-            `Expected to use config at ${configPath}, but PostCSS used ${file} instead`
-          );
-        }
 
         return { plugins, configFile: file };
       } catch (error) {
         throw new GeneratorError(
-          `Failed to load PostCSS config: ${
-            error instanceof Error ? error.message : String(error)
-          }`
+          `PostCSS config not found in project. Please ensure you have a PostCSS configuration file (postcss.config.js, .postcssrc, etc.) in your project.`
         );
       }
     },

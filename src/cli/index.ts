@@ -80,6 +80,10 @@ export const initCLI = () => {
               ? 'dashes'
               : undefined;
 
+          if (!argv.source) {
+            throw new Error('Source pattern is required');
+          }
+
           await run(argv.source, {
             verbose: argv.verbose,
             configPath: argv.config,

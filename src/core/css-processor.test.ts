@@ -38,19 +38,18 @@ describe('CSSProcessor', () => {
       expect(mockPostcssrc).toHaveBeenCalledWith(undefined, configPath);
     });
 
-    it('should throw error when config paths mismatch', async () => {
-      const configPath = 'path/to/postcss.config.js';
-      const differentPath = 'different/path/postcss.config.js';
+    it('should use process.cwd() when configPath is "."', async () => {
+      const mockPlugins = [{ postcssPlugin: 'test' }] as Plugin[];
 
       mockPostcssrc.mockResolvedValue({
-        plugins: [],
-        file: differentPath,
+        plugins: mockPlugins,
+        file: 'found/config/path',
         options: {},
       });
 
-      await expect(processor.loadConfig(configPath)).rejects.toThrow(
-        GeneratorError
-      );
+      await processor.loadConfig('.');
+
+      expect(mockPostcssrc).toHaveBeenCalledWith(undefined, process.cwd());
     });
 
     it('should throw error when config loading fails', async () => {
@@ -58,7 +57,7 @@ describe('CSSProcessor', () => {
       mockPostcssrc.mockRejectedValue(new Error('Config load failed'));
 
       await expect(processor.loadConfig(configPath)).rejects.toThrow(
-        GeneratorError
+        'PostCSS config not found in project. Please ensure you have a PostCSS configuration file (postcss.config.js, .postcssrc, etc.) in your project.'
       );
     });
   });

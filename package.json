@@ -39,8 +39,8 @@
     "prepare": "husky install",
     "dev": "tsc -p . -w",
     "build": "rimraf ./dist && tsup",
-    "lint": "eslint . --fix",
-    "type-check": "tsc --noEmit",
+    "lint:ci": "eslint \"src/**/*.ts\"",
+    "types:ci": "tsc --noEmit",
     "test": "pnpm build && pnpm test:unit && pnpm test:e2e",
     "test:unit": "vitest run src/",
     "test:e2e": "rimraf \"./e2e/fixtures/styles/*.d.ts\" && vitest run e2e/index.test.ts --no-threads",
@@ -48,12 +48,6 @@
     "test:watch": "vitest",
     "test:ci": "pnpm build && pnpm test:coverage",
     "release": "semantic-release"
-  },
-  "lint-staged": {
-    "*.ts": [
-      "eslint --fix",
-      "tsc --noEmit"
-    ]
   },
   "prettier": {
     "singleQuote": true,

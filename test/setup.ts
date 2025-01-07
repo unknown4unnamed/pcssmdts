@@ -1,7 +1,7 @@
 import { join } from 'path';
 
 import fastGlob from 'fast-glob';
-import { pathExists, remove } from 'fs-extra';
+import { remove } from 'fs-extra';
 import { beforeAll, afterAll } from 'vitest';
 
 // Define paths

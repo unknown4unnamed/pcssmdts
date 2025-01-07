@@ -1,4 +1,9 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-pnpm lint-staged
+set -e
+set -u
+set -x
+
+pnpm run types:ci
+pnpm run lint:ci

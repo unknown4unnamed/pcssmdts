@@ -12,7 +12,7 @@ import { createFileOperations } from './file-operations';
 export const run = async (
   source: string,
   {
-    verbose,
+    verbose = false,
     configPath,
     namedExports,
     keep = false,
@@ -64,15 +64,15 @@ export const run = async (
         const { configFile } = await cssProcessor.loadConfig(configPath);
         log(chalk.cyan(`Using PostCSS config: ${configFile}`));
       } else {
-        // Load default config
+        // Load config from project
         const { configFile } = await cssProcessor.loadConfig('.');
-        log(chalk.cyan(`Using default PostCSS config: ${configFile}`));
+        log(chalk.cyan(`Using PostCSS config: ${configFile}`));
       }
     } catch (error) {
       throw new GeneratorError(
-        `PostCSS config file not found or invalid${
+        `${error instanceof Error ? error.message : String(error)}${
           configPath ? ` at path: ${configPath}` : ''
-        }`
+        }\n\nPlease ensure you have a PostCSS configuration file in your project.\nCommon config files: postcss.config.js, .postcssrc, .postcssrc.json, .postcssrc.yaml`
       );
     }
 

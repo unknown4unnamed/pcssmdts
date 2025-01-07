@@ -39,11 +39,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build
-        run: pnpm build
+      - name: Type Check
+        run: pnpm types:ci
 
-      - name: Test
-        run: pnpm test
+      - name: Lint Check
+        run: pnpm lint:ci
+
+      - name: Run tests
+        run: pnpm test:ci
 
   coverage:
     needs: validate

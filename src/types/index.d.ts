@@ -1,6 +1,6 @@
 export type Params = {
   verbose?: boolean;
-  configPath: string;
+  configPath?: string;
   namedExports?: boolean;
   keep?: boolean;
   camelCase?: CamelCaseOption;

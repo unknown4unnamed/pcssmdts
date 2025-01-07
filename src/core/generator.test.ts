@@ -90,7 +90,7 @@ describe('Generator', () => {
 
     await expect(
       run('src/**/*.css', { configPath: 'invalid.config.js' })
-    ).rejects.toThrow('PostCSS config file not found or invalid');
+    ).rejects.toThrow('File not found at path: invalid.config.js');
   });
 
   it('should handle empty CSS files', async () => {

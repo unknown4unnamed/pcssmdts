@@ -1,3 +1,10 @@
+## [0.1.3](https://github.com/unknown4unnamed/pcssmdts/compare/v0.1.2...v0.1.3) (2025-01-07)
+
+
+### Bug Fixes
+
+* ensure dist directory is included in npm package ([feeddf0](https://github.com/unknown4unnamed/pcssmdts/commit/feeddf0f8a6934606f75678294149aecf1234793))
+
 ## [0.1.2](https://github.com/unknown4unnamed/pcssmdts/compare/v0.1.1...v0.1.2) (2025-01-07)
 
 

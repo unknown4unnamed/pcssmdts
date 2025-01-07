@@ -1,3 +1,10 @@
+## [0.1.2](https://github.com/unknown4unnamed/pcssmdts/compare/v0.1.1...v0.1.2) (2025-01-07)
+
+
+### Bug Fixes
+
+* fix for publish executable bin ([6d23ab5](https://github.com/unknown4unnamed/pcssmdts/commit/6d23ab57fc1d2faa88cc2cc3837b8ca2c213b61c))
+
 ## [0.1.1](https://github.com/unknown4unnamed/pcssmdts/compare/v0.1.0...v0.1.1) (2025-01-07)
 
 

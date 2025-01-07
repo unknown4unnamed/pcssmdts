@@ -8,7 +8,9 @@
   },
   "type": "commonjs",
   "files": [
-    "dist"
+    "dist",
+    "LICENSE",
+    "README.md"
   ],
   "author": "Vasyl Semilyak <vasyl.semilyak@gmail.com>",
   "license": "MIT",
@@ -47,7 +49,8 @@
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "test:ci": "pnpm build && pnpm test:coverage",
-    "release": "semantic-release"
+    "release": "semantic-release",
+    "prepublishOnly": "pnpm build"
   },
   "prettier": {
     "singleQuote": true,

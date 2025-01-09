@@ -9,6 +9,257 @@
 
 A powerful TypeScript definition generator for PostCSS-powered CSS Modules, ensuring type safety and providing IDE intellisense for your CSS class names.
 
+## Why pcssmdts?
+
+### The Problem
+
+When working with CSS Modules in TypeScript projects, especially in large design systems or component libraries, you often face these challenges:
+
+1. **Type Safety Gaps**: CSS class names are essentially strings, making them prone to typos and runtime errors
+2. **Poor IDE Support**: No autocomplete for CSS class names means developers need to constantly reference CSS files
+3. **Refactoring Difficulties**: Renaming CSS classes becomes risky without TypeScript's refactoring support
+4. **Design System Maintenance**: Ensuring consistent class usage across a large codebase is challenging
+
+### The Solution
+
+pcssmdts bridges these gaps by:
+
+1. **Type Safety**: Automatically generates TypeScript definitions for your CSS Modules
+2. **IDE Integration**: Provides full IntelliSense support for class names
+3. **Refactoring Support**: Makes class names refactorable through TypeScript's tooling
+4. **PostCSS Integration**: Works seamlessly with your existing PostCSS setup
+
+### Comparison with IDE Solutions
+
+While IDE plugins like `typescript-plugin-css-modules` can provide type support during development, pcssmdts offers several advantages:
+
+1. **CI/CD Integration**:
+
+   - Generate type definitions as part of your build process
+   - Catch type errors in CI before they reach production
+   - No reliance on developer IDE configuration
+
+2. **Team Consistency**:
+
+   - Ensures all team members have the same type definitions
+   - Works regardless of IDE or editor preferences
+   - No need to maintain plugin configurations across the team
+
+3. **Build-time Validation**:
+
+   - Validates CSS Modules during build time
+   - Integrates with your existing TypeScript compilation
+   - Prevents deployment of mismatched class names
+
+4. **Source Control**:
+   - Generated types can be committed (optional)
+   - Enables type checking in environments without PostCSS setup
+   - Perfect for consuming libraries in other projects
+
+```typescript
+// With IDE plugin only:
+// - Types only available during development
+// - Requires IDE configuration
+// - May vary between team members
+
+// With pcssmdts:
+// - Types available everywhere
+// - Part of your build process
+// - Consistent across team and CI
+import styles from './Button.module.css';
+// TypeScript knows exactly what's available
+const className = styles.button; // ✅ Type-safe
+```
+
+### PostCSS Configuration Flexibility
+
+One of the key advantages of pcssmdts is its seamless integration with PostCSS, allowing you to:
+
+1. **Use Your Existing Setup**:
+
+   ```js
+   // postcss.config.js
+   module.exports = {
+     plugins: [
+       require('postcss-nested'),
+       require('tailwindcss'),
+       require('autoprefixer'),
+       require('postcss-modules')({
+         // your custom options
+         generateScopedName: '[name]__[local]___[hash:base64:5]',
+       }),
+     ],
+   };
+   ```
+
+2. **Support Modern CSS Features**:
+
+   ```css
+   /* Your CSS Module with modern syntax */
+   .button {
+     /* Nesting (via postcss-nested) */
+     &:hover {
+       background: theme('colors.blue.600');
+     }
+
+     /* Custom Media Queries */
+     @media (--dark-mode) {
+       background: theme('colors.gray.800');
+     }
+
+     /* CSS Custom Properties */
+     --button-padding: 1rem;
+     padding: var(--button-padding);
+   }
+   ```
+
+3. **Framework Integration**:
+
+   - Works with Tailwind CSS for utility-first styling
+   - Compatible with CSS preprocessors (SASS/LESS) through PostCSS plugins
+   - Integrates with popular frameworks:
+
+     ```tsx
+     // Next.js
+     import styles from './Button.module.css';
+
+     // React
+     import styles from './Button.module.scss'; // With SASS
+
+     // Vue with TypeScript
+     import styles from './Button.module.css';
+     ```
+
+> **Note**: CSS Modules are different from CSS-in-JS solutions. While CSS-in-JS libraries like styled-components or emotion write styles in JavaScript, CSS Modules let you write traditional CSS files with local scope and static analysis. pcssmdts is specifically designed for CSS Modules, providing type safety without runtime overhead.
+
+4. **Custom Naming Conventions**:
+   ```js
+   // postcss.config.js with custom class naming
+   module.exports = {
+     plugins: [
+       require('postcss-modules')({
+         generateScopedName: (name, filename, css) => {
+           // Your custom naming logic
+           return `myApp_${name}_${hashString(css)}`;
+         },
+       }),
+     ],
+   };
+   ```
+
+This flexibility means you can:
+
+- Use modern CSS features while maintaining type safety
+- Integrate with your existing build pipeline
+- Customize class name generation to match your needs
+- Support complex CSS transformations while keeping type definitions accurate
+
+### Real-World Use Cases
+
+#### 1. Design System Development
+
+```tsx
+// Before: No type safety or autocomplete
+const Button = ({ variant }) => (
+  <button className={`btn btn--${variant}`}>Click me</button>
+);
+
+// After: Full type safety and autocomplete
+import styles from './Button.module.css';
+
+type ButtonVariant = 'primary' | 'secondary';
+
+const Button = ({ variant }: { variant: ButtonVariant }) => (
+  <button
+    className={`${styles.btn} ${
+      variant === 'primary' ? styles.btnPrimary : styles.btnSecondary
+    }`}
+  >
+    Click me
+  </button>
+);
+```
+
+#### 2. Large-Scale Application Migration
+
+When migrating a large application to use CSS Modules:
+
+```tsx
+// Before: Global CSS with potential naming conflicts
+const Header = () => (
+  <header className="app-header">
+    <nav className="navigation">
+      <a className="nav-link active">Home</a>
+    </nav>
+  </header>
+);
+
+// After: Scoped CSS Modules with type safety
+import styles from './Header.module.css';
+
+const Header = () => (
+  <header className={styles.header}>
+    <nav className={styles.navigation}>
+      <a className={`${styles.link} ${styles.linkActive}`}>Home</a>
+    </nav>
+  </header>
+);
+```
+
+#### 3. Component Library Development
+
+When building a shared component library:
+
+```tsx
+// components/Card/Card.module.css
+.card {
+  /* styles */
+}
+.cardHeader {
+  /* styles */
+}
+.cardContent {
+  /* styles */
+}
+.cardFooter {
+  /* styles */
+}
+
+// components/Card/Card.tsx
+import styles from './Card.module.css';
+
+export const Card = ({
+  header,
+  children,
+  footer
+}: CardProps) => (
+  <div className={styles.card}>
+    {header && <div className={styles.cardHeader}>{header}</div>}
+    <div className={styles.cardContent}>{children}</div>
+    {footer && <div className={styles.cardFooter}>{footer}</div>}
+  </div>
+);
+```
+
+### Benefits in Practice
+
+1. **Development Speed**:
+
+   - Immediate feedback on invalid class names
+   - Autocomplete reduces need to reference CSS files
+   - Faster onboarding for new team members
+
+2. **Code Quality**:
+
+   - Catch CSS class typos at compile time
+   - Ensure consistent class usage across components
+   - Make refactoring CSS class names safe and easy
+
+3. **Maintenance**:
+   - Track CSS class usage across the codebase
+   - Safely remove unused classes
+   - Easier code reviews with type checking
+
 ## Features
 
 - 🚀 Fast and efficient d.ts generation
@@ -153,9 +404,7 @@ Basic options:
 typed-css-modules options:
   -n, --namedExports      Use named exports in .d.ts files    [boolean] [default: false]
   --camelCase             Convert CSS class names to camelCase [choices: "true", "false", "dashes"]
-  --searchDir             Directory to search for CSS Modules   [string]
-  --outDir               Output directory for generated d.ts files [string]
-  --dropExtension        Drop the input file extension in output [boolean]
+  --outDir               Output directory for generated d.ts files. When specified, all generated .d.ts files will be placed in this directory, regardless of their original location. [string]
   --eol                  End of line character                   [string]
 
 General:
@@ -166,44 +415,94 @@ General:
 ### Common Use Cases
 
 1. **Basic Usage**
+   By default, .d.ts files are generated next to their corresponding CSS modules:
 
    ```sh
    pcssmdts "src/**/*.module.css"
    ```
 
-2. **Watch Mode**
+   Result:
+
+   ```
+   src/
+   ├── components/
+   │   └── Button/
+   │       ├── styles.module.css
+   │       └── styles.module.css.d.ts  (generated here)
+   ```
+
+2. **Using outDir**
+   Place all generated .d.ts files in a specific directory:
+
+   ```sh
+   pcssmdts "src/**/*.module.css" --outDir types
+   ```
+
+   Result:
+
+   ```
+   src/
+   ├── components/
+   │   └── Button/
+   │       └── styles.module.css
+   └── types/
+       └── styles.module.css.d.ts  (generated here)
+   ```
+
+   Note: When using `outDir`, all generated .d.ts files will be placed flat in the specified directory, regardless of their original location in the source tree.
+
+3. **Keep Compiled Files for Debugging**
+   Preserve PostCSS-processed files for debugging or inspection:
+
+   ```sh
+   pcssmdts "src/**/*.module.css" -k
+   ```
+
+   Result:
+
+   ```
+   src/
+   ├── components/
+   │   └── Button/
+   │       ├── styles.module.css              (original)
+   │       ├── _compiled.styles.module.css    (processed CSS)
+   │       └── styles.module.css.d.ts         (generated types)
+   ```
+
+   The `_compiled.*.css` files contain the processed CSS after all PostCSS transformations. This is useful for:
+
+   - Debugging CSS transformations
+   - Verifying PostCSS plugin output
+   - Inspecting final class names after scoping
+
+4. **Watch Mode**
 
    ```sh
    pcssmdts "src/**/*.module.css" -w
    ```
 
-3. **Custom PostCSS Config**
+5. **Custom PostCSS Config**
 
    ```sh
    pcssmdts "src/**/*.module.css" -c ./config/postcss.config.js
    ```
 
-4. **Named Exports with Custom Output Directory**
+6. **Named Exports with Custom Output Directory**
 
    ```sh
    pcssmdts "src/**/*.module.css" -n --outDir types
    ```
 
-5. **CamelCase with Dashes**
+7. **CamelCase with Dashes**
 
    ```sh
    pcssmdts "src/**/*.module.css" --camelCase dashes
    ```
 
-6. **Keep Compiled Files with Custom EOL**
+8. **Keep Compiled Files with Custom EOL**
 
    ```sh
    pcssmdts "src/**/*.module.css" -k --eol "\n"
-   ```
-
-7. **Drop Extension with Search Directory**
-   ```sh
-   pcssmdts "src/**/*.module.css" --dropExtension --searchDir src
    ```
 
 ### Watch Mode

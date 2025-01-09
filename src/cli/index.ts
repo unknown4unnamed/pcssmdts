@@ -24,14 +24,7 @@ export const initCLI = () => {
       description: 'Keep compiled css files',
     })
     .group(
-      [
-        'namedExports',
-        'camelCase',
-        'searchDir',
-        'outDir',
-        'dropExtension',
-        'eol',
-      ],
+      ['namedExports', 'camelCase', 'outDir', 'eol'],
       'typed-css-modules options:'
     )
     .option('namedExports', {
@@ -45,17 +38,10 @@ export const initCLI = () => {
       choices: ['true', 'false', 'dashes'],
       description: 'Convert CSS class names to camelCase',
     })
-    .option('searchDir', {
-      type: 'string',
-      description: 'Directory to search for CSS Modules',
-    })
     .option('outDir', {
       type: 'string',
-      description: 'Output directory for generated d.ts files',
-    })
-    .option('dropExtension', {
-      type: 'boolean',
-      description: 'Drop the input file extension in the output file name',
+      description:
+        'Output directory for generated d.ts files. When specified, all generated .d.ts files will be placed in this directory, regardless of their original location.',
     })
     .option('eol', {
       type: 'string',
@@ -90,9 +76,7 @@ export const initCLI = () => {
             keep: argv.keep,
             namedExports: argv.namedExports,
             camelCase,
-            searchDir: argv.searchDir,
             outDir: argv.outDir,
-            dropExtension: argv.dropExtension,
             EOL: argv.eol,
           });
         } catch (error) {

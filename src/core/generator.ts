@@ -17,9 +17,7 @@ export const run = async (
     namedExports,
     keep = false,
     camelCase,
-    searchDir,
     outDir,
-    dropExtension,
     EOL,
   }: Params
 ): Promise<void> => {
@@ -29,9 +27,7 @@ export const run = async (
   const dtsGenerator = createDtsGenerator({
     namedExports,
     camelCase,
-    searchDir,
     outDir,
-    dropExtension,
     EOL,
   });
 

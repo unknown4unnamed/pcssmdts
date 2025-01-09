@@ -28,9 +28,7 @@ describe('DtsGenerator', () => {
       expect(mockDtsCreator).toHaveBeenCalledWith({
         camelCase: true,
         namedExports: undefined,
-        searchDir: undefined,
         outDir: undefined,
-        dropExtension: undefined,
         EOL: undefined,
         loaderPlugins: undefined,
       });
@@ -57,9 +55,7 @@ describe('DtsGenerator', () => {
       const generator = createDtsGenerator({
         camelCase: 'dashes',
         namedExports: true,
-        searchDir: 'src',
         outDir: 'types',
-        dropExtension: true,
         EOL: '\n',
       });
       const result = await generator.generate(filePath);
@@ -67,9 +63,7 @@ describe('DtsGenerator', () => {
       expect(mockDtsCreator).toHaveBeenCalledWith({
         camelCase: 'dashes',
         namedExports: true,
-        searchDir: 'src',
         outDir: 'types',
-        dropExtension: true,
         EOL: '\n',
         loaderPlugins: undefined,
       });

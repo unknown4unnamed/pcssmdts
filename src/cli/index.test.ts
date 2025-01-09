@@ -15,9 +15,7 @@ type CLIArguments = Arguments<{
   keep?: boolean;
   namedExports?: boolean;
   camelCase?: string;
-  searchDir?: string;
   outDir?: string;
-  dropExtension?: boolean;
   eol?: string;
 }>;
 
@@ -61,14 +59,7 @@ describe('CLI', () => {
       'Basic options:'
     );
     expect(mockYargsInstance.group).toHaveBeenCalledWith(
-      [
-        'namedExports',
-        'camelCase',
-        'searchDir',
-        'outDir',
-        'dropExtension',
-        'eol',
-      ],
+      ['namedExports', 'camelCase', 'outDir', 'eol'],
       'typed-css-modules options:'
     );
 
@@ -185,9 +176,7 @@ describe('CLI', () => {
         keep: true,
         namedExports: true,
         camelCase: 'dashes',
-        searchDir: 'src',
         outDir: 'types',
-        dropExtension: true,
         eol: '\n',
         $0: '',
         _: [],
@@ -199,9 +188,7 @@ describe('CLI', () => {
         keep: true,
         namedExports: true,
         camelCase: 'dashes',
-        searchDir: 'src',
         outDir: 'types',
-        dropExtension: true,
         EOL: '\n',
       } satisfies Params);
     }
@@ -240,9 +227,7 @@ describe('CLI', () => {
         keep: undefined,
         namedExports: false,
         camelCase: undefined,
-        searchDir: undefined,
         outDir: undefined,
-        dropExtension: undefined,
         EOL: undefined,
       } satisfies Params);
     }

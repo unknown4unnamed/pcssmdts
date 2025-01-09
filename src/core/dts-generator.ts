@@ -15,9 +15,7 @@ export const createDtsGenerator = (
   const creator = new DtsCreator({
     camelCase: options.camelCase ?? true,
     namedExports: options.namedExports,
-    searchDir: options.searchDir,
     outDir: options.outDir,
-    dropExtension: options.dropExtension,
     EOL: options.EOL,
     loaderPlugins: options.loaderPlugins,
   });

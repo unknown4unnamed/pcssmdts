@@ -1,3 +1,10 @@
+## [0.1.4](https://github.com/unknown4unnamed/pcssmdts/compare/v0.1.3...v0.1.4) (2025-01-09)
+
+
+### Bug Fixes
+
+* enhance README with detailed explanations of pcssmdts benefits and usage ([e230ab4](https://github.com/unknown4unnamed/pcssmdts/commit/e230ab4df729d33f69c8099f61e549bafb39e8ca))
+
 ## [0.1.3](https://github.com/unknown4unnamed/pcssmdts/compare/v0.1.2...v0.1.3) (2025-01-07)
 
 

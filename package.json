@@ -64,7 +64,7 @@
   },
   "dependencies": {
     "chalk": "^4.1.2",
-    "fast-glob": "^3.3.0",
+    "fast-glob": "^3.3.3",
     "fs-extra": "^10.1.0",
     "postcss": "^8.4.14",
     "postcss-load-config": "^4.0.2",

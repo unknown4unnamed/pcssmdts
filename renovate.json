@@ -1,6 +1,49 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
-  ]
+    "config:recommended",
+    ":semanticCommits"
+  ],
+  "packageRules": [
+    {
+      "matchPackagePatterns": [
+        "*"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "enabled": false
+    },
+    {
+      "matchDepTypes": [
+        "dependencies"
+      ],
+      "groupName": "production dependencies",
+      "semanticCommitType": "chore",
+      "semanticCommitScope": "deps"
+    },
+    {
+      "matchDepTypes": [
+        "devDependencies"
+      ],
+      "groupName": "development dependencies",
+      "semanticCommitType": "chore",
+      "semanticCommitScope": "deps-dev"
+    }
+  ],
+  "rangeStrategy": "bump",
+  "schedule": [
+    "every weekend"
+  ],
+  "prConcurrentLimit": 5,
+  "constraints": {
+    "pnpm": "8.15.6",
+    "node": "16.19.1"
+  },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": [
+      "every weekend"
+    ]
+  }
 }

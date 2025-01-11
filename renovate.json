@@ -29,6 +29,12 @@
       "groupName": "development dependencies",
       "semanticCommitType": "chore",
       "semanticCommitScope": "deps-dev"
+    },
+    {
+      "matchPackageNames": [
+        "node"
+      ],
+      "enabled": false
     }
   ],
   "rangeStrategy": "bump",

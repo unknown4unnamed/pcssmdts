@@ -22,7 +22,13 @@
     {
       "matchPackageNames": ["node"],
       "enabled": false
-    }
+    },
+        {
+          "matchPackageNames": [
+            "typed-css-modules"
+          ],
+          "allowedVersions": "<=0.8.1"
+        }
   ],
   "rangeStrategy": "bump",
   "schedule": ["every weekend"],

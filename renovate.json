@@ -1,46 +1,31 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended",
-    ":semanticCommits"
-  ],
+  "extends": ["config:recommended", ":semanticCommits"],
   "packageRules": [
     {
-      "matchPackagePatterns": [
-        "*"
-      ],
-      "matchUpdateTypes": [
-        "major"
-      ],
-      "enabled": false
+      "matchUpdateTypes": ["major"],
+      "enabled": false,
+      "matchPackageNames": ["*"]
     },
     {
-      "matchDepTypes": [
-        "dependencies"
-      ],
+      "matchDepTypes": ["dependencies"],
       "groupName": "production dependencies",
       "semanticCommitType": "chore",
       "semanticCommitScope": "deps"
     },
     {
-      "matchDepTypes": [
-        "devDependencies"
-      ],
+      "matchDepTypes": ["devDependencies"],
       "groupName": "development dependencies",
       "semanticCommitType": "chore",
       "semanticCommitScope": "deps-dev"
     },
     {
-      "matchPackageNames": [
-        "node"
-      ],
+      "matchPackageNames": ["node"],
       "enabled": false
     }
   ],
   "rangeStrategy": "bump",
-  "schedule": [
-    "every weekend"
-  ],
+  "schedule": ["every weekend"],
   "prConcurrentLimit": 5,
   "constraints": {
     "pnpm": "8.15.6",
@@ -48,8 +33,6 @@
   },
   "lockFileMaintenance": {
     "enabled": true,
-    "schedule": [
-      "every weekend"
-    ]
+    "schedule": ["every weekend"]
   }
 }

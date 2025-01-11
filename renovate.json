@@ -1,37 +1,58 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended", ":semanticCommits"],
+  "extends": [
+    "config:recommended",
+    ":semanticCommits"
+  ],
   "packageRules": [
     {
-      "matchUpdateTypes": ["major"],
+      "matchUpdateTypes": [
+        "major"
+      ],
       "enabled": false,
-      "matchPackageNames": ["*"]
+      "matchPackageNames": [
+        "*"
+      ]
     },
     {
-      "matchDepTypes": ["dependencies"],
+      "matchDepTypes": [
+        "dependencies"
+      ],
       "groupName": "production dependencies",
       "semanticCommitType": "chore",
       "semanticCommitScope": "deps"
     },
     {
-      "matchDepTypes": ["devDependencies"],
+      "matchDepTypes": [
+        "devDependencies"
+      ],
       "groupName": "development dependencies",
       "semanticCommitType": "chore",
       "semanticCommitScope": "deps-dev"
     },
     {
-      "matchPackageNames": ["node"],
+      "matchPackageNames": [
+        "node"
+      ],
       "enabled": false
     },
-        {
-          "matchPackageNames": [
-            "typed-css-modules"
-          ],
-          "allowedVersions": "<=0.8.1"
-        }
+    {
+      "matchPackageNames": [
+        "typed-css-modules"
+      ],
+      "allowedVersions": "<=0.7.2"
+    },
+    {
+      "matchPackageNames": [
+        "postcss"
+      ],
+      "allowedVersions": "<=8.4.14"
+    }
   ],
   "rangeStrategy": "bump",
-  "schedule": ["every weekend"],
+  "schedule": [
+    "every weekend"
+  ],
   "prConcurrentLimit": 5,
   "constraints": {
     "pnpm": "8.15.6",
@@ -39,6 +60,15 @@
   },
   "lockFileMaintenance": {
     "enabled": true,
-    "schedule": ["every weekend"]
+    "schedule": [
+      "every weekend"
+    ]
+  },
+  "postUpdateOptions": [
+    "pnpmDedupe"
+  ],
+  "lockfileConfig": {
+    "lockedVersions": true,
+    "packageManager": "pnpm"
   }
 }

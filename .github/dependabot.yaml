@@ -27,5 +27,4 @@ updates:
         update-types:
           - 'minor'
           - 'patch'
-    # Keep the lockfile version at 6.0
-    lockfile-version: 6.0
+    package-manager: 'pnpm@8.15.6'

@@ -66,9 +66,5 @@
   },
   "postUpdateOptions": [
     "pnpmDedupe"
-  ],
-  "lockfileConfig": {
-    "lockedVersions": true,
-    "packageManager": "pnpm"
-  }
+  ]
 }

@@ -33,10 +33,14 @@ jobs:
       - name: Run tests
         run: pnpm test:ci
       - name: Upload coverage reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
         with:
           name: coverage-report
           path: coverage/
+          retention-days: 30
+          compression-level: 6
+          overwrite: true
       - name: Report Coverage
         if: github.event_name == 'pull_request'
         uses: davelosert/vitest-coverage-report-action@v2

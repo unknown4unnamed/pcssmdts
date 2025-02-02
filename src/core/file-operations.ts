@@ -7,9 +7,11 @@ import {
   TYPE_DEF_FILE_EXT,
   type FileOperations,
 } from '@/types/index';
+import { type Logger } from '@/utils/logger';
 
-export const createFileOperations = (): FileOperations => ({
+export const createFileOperations = (logger?: Logger): FileOperations => ({
   readFile: async (filePath: string): Promise<string> => {
+    logger?.debug(`Reading file: ${filePath}`);
     return readFile(filePath, 'utf-8');
   },
 
@@ -20,6 +22,7 @@ export const createFileOperations = (): FileOperations => ({
     const compiledPath = `${path.dirname(
       originalPath
     )}/${COMPILED_CSS_PREFIX}${path.basename(originalPath)}`;
+    logger?.debug(`Writing compiled CSS to: ${compiledPath}`);
     await writeFile(compiledPath, content);
     return compiledPath;
   },
@@ -34,22 +37,48 @@ export const createFileOperations = (): FileOperations => ({
       ''
     )}.${TYPE_DEF_FILE_EXT}`;
     const tempDtsPath = `${compiledPath}.${TYPE_DEF_FILE_EXT}`;
-
     const dtsPath = outDir
       ? path.join(outDir, path.basename(baseDtsPath))
       : baseDtsPath;
 
+    logger?.debug(`Writing d.ts file: ${dtsPath}`);
+
     if (outDir) {
+      logger?.debug(`Creating output directory: ${outDir}`);
       await mkdir(outDir, { recursive: true });
     }
 
-    await writeFile(tempDtsPath, content);
-    await rename(tempDtsPath, dtsPath);
+    try {
+      await writeFile(tempDtsPath, content);
+      await mkdir(path.dirname(dtsPath), { recursive: true });
+
+      try {
+        await remove(dtsPath);
+      } catch {
+        logger?.debug(`No existing d.ts file to remove at: ${dtsPath}`);
+      }
+
+      await rename(tempDtsPath, dtsPath);
+      logger?.debug(`Successfully wrote d.ts file: ${dtsPath}`);
+    } catch (error) {
+      logger?.error(
+        `Failed to write d.ts file: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+      try {
+        await remove(tempDtsPath);
+      } catch {
+        logger?.debug(`Failed to cleanup temporary file: ${tempDtsPath}`);
+      }
+      throw error;
+    }
 
     return dtsPath;
   },
 
   removeFile: async (filePath: string): Promise<void> => {
+    logger?.debug(`Removing file: ${filePath}`);
     await remove(filePath);
   },
 
@@ -57,6 +86,7 @@ export const createFileOperations = (): FileOperations => ({
     cssPath: string,
     dtsPath: string
   ): Promise<void> => {
+    logger?.debug(`Removing compiled files: ${cssPath}, ${dtsPath}`);
     await Promise.all([remove(cssPath), remove(dtsPath)]);
   },
 });

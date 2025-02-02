@@ -22,19 +22,22 @@ export const run = async (
   }: Params
 ): Promise<void> => {
   const log = logger(verbose);
-  const fileOps = createFileOperations();
-  const cssProcessor = createCSSProcessor();
-  const dtsGenerator = createDtsGenerator({
-    namedExports,
-    camelCase,
-    outDir,
-    EOL,
-  });
+  const fileOps = createFileOperations(log);
+  const cssProcessor = createCSSProcessor(log);
+  const dtsGenerator = createDtsGenerator(
+    {
+      namedExports,
+      camelCase,
+      outDir,
+      EOL,
+    },
+    log
+  );
 
-  log(chalk.greenBright(`\nGenerating d.ts for "${source}"\n`));
+  log.info(chalk.greenBright(`\nGenerating d.ts for "${source}"\n`));
 
   if (keep) {
-    log(
+    log.warn(
       chalk.bgYellowBright.red(
         '\nAttention, you are preserving compiled css files!\n'
       )
@@ -42,12 +45,14 @@ export const run = async (
   }
 
   try {
+    log.debug(`Searching for files matching pattern: ${source}`);
     const filesMatch = await fastGlob(source);
     const cssModules = filesMatch.filter(
       (p) => !p.includes(COMPILED_CSS_PREFIX)
     );
 
     if (!cssModules.length) {
+      log.error(`No files found matching pattern: ${source}`);
       throw new GeneratorError(
         'No files were found to compile, please check your glob pattern'
       );
@@ -58,11 +63,11 @@ export const run = async (
       if (configPath) {
         await fileOps.readFile(configPath);
         const { configFile } = await cssProcessor.loadConfig(configPath);
-        log(chalk.cyan(`Using PostCSS config: ${configFile}`));
+        log.info(chalk.cyan(`Using PostCSS config: ${configFile}`));
       } else {
         // Load config from project
         const { configFile } = await cssProcessor.loadConfig('.');
-        log(chalk.cyan(`Using PostCSS config: ${configFile}`));
+        log.info(chalk.cyan(`Using PostCSS config: ${configFile}`));
       }
     } catch (error) {
       throw new GeneratorError(
@@ -72,7 +77,7 @@ export const run = async (
       );
     }
 
-    log(
+    log.info(
       chalk.magenta(
         `Found ${cssModules.length} file${
           cssModules.length === 1 ? '' : 's'
@@ -85,7 +90,7 @@ export const run = async (
         const css = await fileOps.readFile(cssModuleFilePath);
 
         if (!css.trim()) {
-          log(
+          log.warn(
             chalk.yellow(`Empty file detected: ${cssModuleFilePath}, skipping`)
           );
           // Skip empty files - no type definitions needed
@@ -99,7 +104,7 @@ export const run = async (
             cssModuleFilePath
           );
           if (!compiledCss.trim()) {
-            log(
+            log.warn(
               chalk.yellow(
                 `No CSS classes found in: ${cssModuleFilePath}, skipping`
               )
@@ -118,7 +123,7 @@ export const run = async (
           const dtsContent = await dtsGenerator.generate(compiledCSSFilePath);
 
           if (dtsContent.isEmpty) {
-            log(
+            log.warn(
               chalk.yellow(`No CSS classes to export in: ${cssModuleFilePath}`)
             );
             // For empty modules, still generate an empty d.ts file
@@ -143,12 +148,12 @@ export const run = async (
             await fileOps.removeFile(compiledCSSFilePath);
           }
 
-          log(chalk.green(`✓ Generated ${dtsFilename}`));
+          log.info(chalk.green(`✓ Generated ${dtsFilename}`));
         } catch (error) {
           const errorMessage = `An error occurred during generation: Error processing CSS module ${cssModuleFilePath}: ${
             error instanceof Error ? error.message : String(error)
           }`;
-          log(chalk.yellow(errorMessage));
+          log.error(chalk.yellow(errorMessage));
           await fileOps.removeFile(`${cssModuleFilePath}.d.ts`);
           throw new GeneratorError(errorMessage);
         }
@@ -164,7 +169,7 @@ export const run = async (
     const errorMessage = `An error occurred during generation: ${
       error instanceof Error ? error.message : String(error)
     }`;
-    log(chalk.red(errorMessage));
+    log.error(chalk.red(errorMessage));
     throw new GeneratorError(errorMessage);
   }
 };

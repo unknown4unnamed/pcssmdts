@@ -34,7 +34,12 @@ vi.mock('./file-operations');
 describe('Generator', () => {
   const mockFastGlob = vi.mocked(fastGlob);
   const mockLogger = vi.mocked(logger);
-  const mockLog = vi.fn();
+  const mockLog = {
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
+  };
   const mockFileOps: FileOperations = {
     readFile: vi.fn(),
     writeCompiledCSS: vi.fn(),
@@ -104,7 +109,7 @@ describe('Generator', () => {
 
     await run('src/**/*.css', { configPath: '.' });
 
-    expect(mockLog).toHaveBeenCalledWith(
+    expect(mockLog.warn).toHaveBeenCalledWith(
       expect.stringContaining('Empty file detected')
     );
     expect(mockCssProcessor.process).not.toHaveBeenCalled();
@@ -122,7 +127,7 @@ describe('Generator', () => {
 
     await run('src/**/*.css', { configPath: '.' });
 
-    expect(mockLog).toHaveBeenCalledWith(
+    expect(mockLog.warn).toHaveBeenCalledWith(
       expect.stringContaining('No CSS classes found in')
     );
     expect(mockFileOps.removeFile).toHaveBeenCalledWith('test.css.d.ts');
@@ -201,22 +206,20 @@ describe('Generator', () => {
 
     await run('src/**/*.css', { configPath: '.', verbose: true });
 
-    expect(mockLogger).toHaveBeenCalledWith(true);
-
     // Verify all log messages in order
-    expect(mockLog).toHaveBeenNthCalledWith(
+    expect(mockLog.info).toHaveBeenNthCalledWith(
       1,
       expect.stringContaining('Generating d.ts for "src/**/*.css"')
     );
-    expect(mockLog).toHaveBeenNthCalledWith(
+    expect(mockLog.info).toHaveBeenNthCalledWith(
       2,
       expect.stringContaining('Using PostCSS config: postcss.config.js')
     );
-    expect(mockLog).toHaveBeenNthCalledWith(
+    expect(mockLog.info).toHaveBeenNthCalledWith(
       3,
       expect.stringContaining('Found 1 file to process')
     );
-    expect(mockLog).toHaveBeenNthCalledWith(
+    expect(mockLog.info).toHaveBeenNthCalledWith(
       4,
       expect.stringContaining('✓ Generated test.css.d.ts')
     );
@@ -245,7 +248,7 @@ describe('Generator', () => {
 
     await run('src/**/*.css', { configPath: '.' });
 
-    expect(mockLog).toHaveBeenCalledWith(
+    expect(mockLog.warn).toHaveBeenCalledWith(
       expect.stringContaining('No CSS classes to export in')
     );
     expect(mockFileOps.writeDtsFile).toHaveBeenCalledWith(

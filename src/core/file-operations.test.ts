@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { readFile, writeFile, rename, remove } from 'fs-extra';
+import { readFile, writeFile, rename, remove, mkdir } from 'fs-extra';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 import { createFileOperations } from './file-operations';
@@ -14,6 +14,7 @@ vi.mock('fs-extra', () => ({
   writeFile: vi.fn(),
   rename: vi.fn(),
   remove: vi.fn(),
+  mkdir: vi.fn().mockResolvedValue(undefined),
 }));
 
 describe('FileOperations', () => {
@@ -54,9 +55,12 @@ describe('FileOperations', () => {
       const compiledPath = 'styles/_compiled.test.css';
       vi.mocked(writeFile).mockResolvedValue();
       vi.mocked(rename).mockResolvedValue();
+      vi.mocked(mkdir).mockResolvedValue();
+      vi.mocked(remove).mockResolvedValue();
 
       await fileOps.writeDtsFile(compiledPath, content);
 
+      expect(mkdir).toHaveBeenCalledWith('styles', { recursive: true });
       expect(writeFile).toHaveBeenCalledWith(
         'styles/_compiled.test.css.d.ts',
         content
@@ -64,6 +68,45 @@ describe('FileOperations', () => {
       expect(rename).toHaveBeenCalledWith(
         'styles/_compiled.test.css.d.ts',
         'styles/test.css.d.ts'
+      );
+    });
+
+    it('should handle errors and clean up temp files', async () => {
+      const content = 'export const styles = {};';
+      const compiledPath = 'styles/_compiled.test.css';
+      const error = new Error('Write failed');
+
+      vi.mocked(writeFile).mockRejectedValue(error);
+      vi.mocked(remove).mockResolvedValue();
+      vi.mocked(mkdir).mockResolvedValue();
+
+      await expect(fileOps.writeDtsFile(compiledPath, content)).rejects.toThrow(
+        error
+      );
+      expect(remove).toHaveBeenCalledWith('styles/_compiled.test.css.d.ts');
+    });
+
+    it('should create output directory when specified', async () => {
+      const content = 'export const styles = {};';
+      const compiledPath = 'styles/_compiled.test.css';
+      const outDir = 'dist/types';
+
+      vi.mocked(writeFile).mockResolvedValue();
+      vi.mocked(rename).mockResolvedValue();
+      vi.mocked(mkdir).mockResolvedValue();
+      vi.mocked(remove).mockResolvedValue();
+
+      await fileOps.writeDtsFile(compiledPath, content, outDir);
+
+      expect(mkdir).toHaveBeenCalledWith(outDir, { recursive: true });
+      expect(mkdir).toHaveBeenCalledWith(outDir, { recursive: true });
+      expect(writeFile).toHaveBeenCalledWith(
+        'styles/_compiled.test.css.d.ts',
+        content
+      );
+      expect(rename).toHaveBeenCalledWith(
+        'styles/_compiled.test.css.d.ts',
+        path.join(outDir, 'test.css.d.ts')
       );
     });
   });

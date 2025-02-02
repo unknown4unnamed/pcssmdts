@@ -1,3 +1,10 @@
+# [0.2.0](https://github.com/unknown4unnamed/pcssmdts/compare/v0.1.4...v0.2.0) (2025-02-02)
+
+
+### Features
+
+* **logging:** enhance logging with multi-level logger and debug support ([222146a](https://github.com/unknown4unnamed/pcssmdts/commit/222146a519b9c8359bba2d858a50cf2d096ef7fb))
+
 ## [0.1.4](https://github.com/unknown4unnamed/pcssmdts/compare/v0.1.3...v0.1.4) (2025-01-09)
 
 

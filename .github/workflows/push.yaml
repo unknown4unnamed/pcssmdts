@@ -87,7 +87,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: success() || failure()
         with:
-          name: coverage-report
+          name: coverage-report-main
           path: |
             coverage/
             coverage/badge.txt
@@ -145,7 +145,7 @@ jobs:
       - name: Download coverage report
         uses: actions/download-artifact@v4
         with:
-          name: coverage-report
+          name: coverage-report-main
           path: coverage
 
       - name: Get latest version

@@ -1,6 +1,6 @@
 [![Test](https://github.com/unknown4unnamed/pcssmdts/actions/workflows/test.yml/badge.svg)](https://github.com/unknown4unnamed/pcssmdts/actions/workflows/test.yml)
-![Coverage](https://img.shields.io/badge/coverage-95.25%25-brightgreen)
-[![npm](https://img.shields.io/badge/npm-v0.1.4-blue)](https://www.npmjs.com/package/pcssmdts)
+![Coverage](https://img.shields.io/badge/coverage-95.03%25-brightgreen)
+[![npm](https://img.shields.io/badge/npm-v0.2.0-blue)](https://www.npmjs.com/package/pcssmdts)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node Version](https://img.shields.io/badge/node-%3E%3D16.19.1%20%3C21-brightgreen)](https://nodejs.org)
 [![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)

@@ -26,8 +26,9 @@
   },
   "homepage": "https://github.com/unknown4unnamed/pcssmdts#readme",
   "engines": {
-    "node": ">=16.19.1 <21"
+    "node": "21"
   },
+  "packageManager": "pnpm@10.10.0",
   "ntl": {
     "runner": "pnpm"
   },
@@ -68,10 +69,12 @@
     "fs-extra": "^10.1.0",
     "postcss": "^8.4.14",
     "postcss-load-config": "^4.0.2",
-    "typed-css-modules": "^0.7.2",
+    "typed-css-modules": "^0.8",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
     "@types/fs-extra": "^9.0.13",
     "@types/node": "^16.18.125",
     "@types/yargs": "^17.0.33",
@@ -89,8 +92,6 @@
     "prettier": "^2.8.8",
     "rimraf": "^5.0.10",
     "semantic-release": "^19.0.5",
-    "@semantic-release/changelog": "^6.0.3",
-    "@semantic-release/git": "^10.0.1",
     "tailwindcss": "^3.4.17",
     "tsconfig-paths": "^4.2.0",
     "tsup": "^6.7.0",

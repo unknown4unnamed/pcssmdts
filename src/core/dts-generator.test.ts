@@ -11,9 +11,10 @@ describe('DtsGenerator', () => {
   describe('generate', () => {
     it('should generate d.ts content with default options', async () => {
       const filePath = 'test.module.css';
+      const mockTokens = ['test', 'anotherTest'];
       const mockContent = {
-        formatted: 'export const test: string;',
-        tokens: ['test'],
+        formatted: '',
+        tokens: mockTokens,
         writeFile: vi.fn(),
       };
 
@@ -33,19 +34,21 @@ describe('DtsGenerator', () => {
         loaderPlugins: undefined,
       });
       expect(mockCreate).toHaveBeenCalledWith(filePath);
-      expect(result).toEqual({
-        formatted: mockContent.formatted,
-        isEmpty: false,
-      });
+
+      const expectedFormatted = `declare const styles: {\n  readonly "anotherTest": string;\n  readonly "test": string;\n};\nexport = styles;\n`;
+      expect(result.formatted).toEqual(expectedFormatted);
+      expect(result.isEmpty).toBe(false);
     });
 
     it('should generate d.ts content with custom options', async () => {
       const filePath = 'test.module.css';
+      const mockTokens = ['test-class', 'another-class'];
       const mockContent = {
-        formatted: 'export const test: string;',
-        tokens: ['test'],
+        formatted: '',
+        tokens: mockTokens,
         writeFile: vi.fn(),
       };
+      const EOL = '\r\n';
 
       const mockCreate = vi.fn().mockResolvedValue(mockContent);
       mockDtsCreator.mockImplementation(
@@ -56,7 +59,7 @@ describe('DtsGenerator', () => {
         camelCase: 'dashes',
         namedExports: true,
         outDir: 'types',
-        EOL: '\n',
+        EOL,
       });
       const result = await generator.generate(filePath);
 
@@ -64,14 +67,14 @@ describe('DtsGenerator', () => {
         camelCase: 'dashes',
         namedExports: true,
         outDir: 'types',
-        EOL: '\n',
+        EOL,
         loaderPlugins: undefined,
       });
       expect(mockCreate).toHaveBeenCalledWith(filePath);
-      expect(result).toEqual({
-        formatted: mockContent.formatted,
-        isEmpty: false,
-      });
+
+      const expectedFormatted = `export const __esModule: true;${EOL}export const another-class: string;${EOL}export const test-class: string;${EOL}`;
+      expect(result.formatted).toEqual(expectedFormatted);
+      expect(result.isEmpty).toBe(false);
     });
 
     it('should handle empty CSS modules', async () => {

@@ -69,7 +69,7 @@
     "fs-extra": "^10.1.0",
     "postcss": "^8.4.14",
     "postcss-load-config": "^4.0.2",
-    "typed-css-modules": "^0.9.1",
+    "typed-css-modules": "^0.8",
     "yargs": "^17.7.2"
   },
   "devDependencies": {

@@ -24,8 +24,8 @@ importers:
         specifier: ^4.0.2
         version: 4.0.2(postcss@8.5.3)
       typed-css-modules:
-        specifier: ^0.9.1
-        version: 0.9.1
+        specifier: ^0.8
+        version: 0.8.1
       yargs:
         specifier: ^17.7.2
         version: 17.7.2
@@ -3251,8 +3251,8 @@ packages:
     resolution: {integrity: sha512-3KS2b+kL7fsuk/eJZ7EQdnEmQoaho/r6KUef7hxvltNA5DR8NAUM+8wJMbJyZ4G9/7i3v5zPBIMN5aybAh2/Jg==}
     engines: {node: '>= 0.4'}
 
-  typed-css-modules@0.9.1:
-    resolution: {integrity: sha512-W2HWKncdKd+bLWsnuWB2EyuQBzZ7KJ9Byr/67KLiiyGegcN52rOveun9JR8yAvuL5IXunRMxt0eORMtAUj5bmA==}
+  typed-css-modules@0.8.1:
+    resolution: {integrity: sha512-OhM5FntBI+BvwXHvnApyzUYxFLEU2qxta24FPmz00Qp2nPQsdl+TB7a3vvGa89Z8ug1E2bqIOkSPA3iUaT3UGw==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -6686,7 +6686,7 @@ snapshots:
       possible-typed-array-names: 1.1.0
       reflect.getprototypeof: 1.0.10
 
-  typed-css-modules@0.9.1:
+  typed-css-modules@0.8.1:
     dependencies:
       camelcase: 6.3.0
       chalk: 4.1.2

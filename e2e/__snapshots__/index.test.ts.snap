@@ -2,54 +2,49 @@
 
 exports[`E2E > should generate d.ts files with custom EOL 1`] = `
 "declare const styles: {
+  readonly \\"button\\": string;
   readonly \\"container\\": string;
   readonly \\"title\\": string;
-  readonly \\"button\\": string;
 };
 export = styles;
-
 "
 `;
 
 exports[`E2E > should generate d.ts files with custom outDir 1`] = `
 "declare const styles: {
+  readonly \\"button\\": string;
   readonly \\"container\\": string;
   readonly \\"title\\": string;
-  readonly \\"button\\": string;
 };
 export = styles;
-
 "
 `;
 
 exports[`E2E > should generate d.ts files with dashes camelCase option 1`] = `
 "declare const styles: {
+  readonly \\"button\\": string;
   readonly \\"container\\": string;
   readonly \\"title\\": string;
-  readonly \\"button\\": string;
 };
 export = styles;
-
 "
 `;
 
 exports[`E2E > should generate d.ts files with default options 1`] = `
 "declare const styles: {
+  readonly \\"button\\": string;
   readonly \\"container\\": string;
   readonly \\"title\\": string;
-  readonly \\"button\\": string;
 };
 export = styles;
-
 "
 `;
 
 exports[`E2E > should generate d.ts files with named exports 1`] = `
 "export const __esModule: true;
+export const button: string;
 export const container: string;
 export const title: string;
-export const button: string;
-
 "
 `;
 
@@ -112,11 +107,10 @@ exports[`E2E > should preserve PostCSS files when keep option is enabled > compi
 
 exports[`E2E > should preserve PostCSS files when keep option is enabled 1`] = `
 "declare const styles: {
+  readonly \\"button\\": string;
   readonly \\"container\\": string;
   readonly \\"title\\": string;
-  readonly \\"button\\": string;
 };
 export = styles;
-
 "
 `;

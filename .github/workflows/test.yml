@@ -24,7 +24,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - uses: pnpm/action-setup@v2
         with:
-          version: 8.15.6
+          version: 8.15.9
       - run: pnpm install
       - name: Type Check
         run: pnpm types:ci

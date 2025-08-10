@@ -26,7 +26,7 @@ jobs:
 
       - uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 8.15.9
 
       - uses: actions/cache@v3
         name: Setup pnpm cache
@@ -61,7 +61,7 @@ jobs:
 
       - uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 8.15.9
 
       - uses: actions/cache@v3
         name: Setup pnpm cache
@@ -113,7 +113,7 @@ jobs:
 
       - uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 8.15.9
 
       - uses: actions/cache@v3
         name: Setup pnpm cache
